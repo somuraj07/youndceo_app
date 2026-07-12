@@ -23,6 +23,9 @@ export const authConfig = {
     signIn: "/login",
   },
 
+  // Required for `next start` and most hosts (Vercel sets host headers dynamically).
+  trustHost: true,
+
   session: {
     strategy: "jwt",
   },
