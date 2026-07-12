@@ -1,17 +1,10 @@
 import Link from "next/link";
 import { RegisterForm } from "./register-form";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export default function RegisterPage() {
   return (
     <main className="app-gradient-bg flex min-h-dvh flex-col justify-center px-6 py-12">
       <div className="mx-auto w-full max-w-md">
-        <div className="mb-6 flex justify-end">
-          <div className="w-56">
-            <ThemeToggle compact />
-          </div>
-        </div>
-
         <div className="mb-8 text-center">
           <p className="text-2xl font-bold text-foreground">Young CEO</p>
           <p className="mt-1 text-sm text-muted">Learn. Build. Lead.</p>
