@@ -1,10 +1,12 @@
-import Image from "next/image";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
-export default function Home() {
-  return (
-    <div>
-      hiii youngceo 
-      <p>started a project</p>
-    </div>
-  );
+export default async function Home() {
+  const session = await auth();
+
+  if (session?.user) {
+    redirect(session.user.role === "ADMIN" ? "/admin" : "/home");
+  }
+
+  redirect("/login");
 }

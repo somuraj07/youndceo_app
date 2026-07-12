@@ -9,25 +9,32 @@ export default async function LoginPage({
   const params = await searchParams;
 
   return (
-    <main className="mx-auto flex min-h-full w-full max-w-md flex-col justify-center px-6 py-12">
-      {params.registered ? (
-        <div className="mb-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          Account created. Please sign in.
+    <main className="app-gradient-bg flex min-h-dvh flex-col justify-center px-6 py-12">
+      <div className="mx-auto w-full max-w-md">
+        <div className="mb-8 text-center">
+          <p className="text-2xl font-bold text-foreground">Young CEO</p>
+          <p className="mt-1 text-sm text-muted">Learn. Build. Lead.</p>
         </div>
-      ) : null}
 
-      <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-        <h1 className="text-2xl font-semibold text-zinc-900">Sign in</h1>
-        <p className="mt-2 text-sm text-zinc-600">Welcome back to YoungCEO.</p>
+        {params.registered ? (
+          <div className="mb-4 rounded-lg border border-green/30 bg-green/10 px-4 py-3 text-sm text-green">
+            Account created. Please sign in.
+          </div>
+        ) : null}
 
-        <LoginForm />
+        <div className="card-glow rounded-2xl bg-surface p-8">
+          <h1 className="text-xl font-semibold text-foreground">Sign in</h1>
+          <p className="mt-2 text-sm text-muted">Welcome back to YoungCEO.</p>
 
-        <p className="mt-6 text-center text-sm text-zinc-600">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="font-medium text-zinc-900">
-            Create one
-          </Link>
-        </p>
+          <LoginForm />
+
+          <p className="mt-6 text-center text-sm text-muted">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="font-medium text-purple-soft">
+              Create one
+            </Link>
+          </p>
+        </div>
       </div>
     </main>
   );
