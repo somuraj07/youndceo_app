@@ -1,3 +1,4 @@
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { HeaderActions } from "@/components/layout/header-actions";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import {
@@ -21,6 +22,7 @@ export async function AppHeader({
 }: AppHeaderProps) {
   const firstName =
     name.trim().split(/\s+/)[0] || (variant === "admin" ? "Admin" : "CEO");
+  const homeHref = variant === "admin" ? "/admin" : "/home";
   const profileHref = variant === "admin" ? "/admin/settings" : "/profile";
   const maxWidth = variant === "admin" ? "max-w-5xl" : "max-w-lg";
 
@@ -37,27 +39,42 @@ export async function AppHeader({
       <div
         className={`mx-auto flex w-full items-center justify-between gap-3 ${maxWidth}`}
       >
-        <Link
-          href={profileHref}
-          prefetch
-          className="flex min-w-0 items-center gap-3"
-        >
-          <UserAvatar
-            src={avatarUrl}
-            name={name}
-            size={44}
-            className="ring-2 ring-white/15"
-          />
-          <div className="min-w-0">
-            <p className="truncate text-[15px] leading-tight text-muted">
-              Hello,{" "}
-              <span className="font-semibold text-foreground">{firstName}</span>
-            </p>
-            {variant === "admin" ? (
-              <p className="text-[11px] text-muted">Admin</p>
-            ) : null}
-          </div>
-        </Link>
+        <div className="flex min-w-0 items-center gap-3">
+          <Link
+            href={homeHref}
+            prefetch
+            aria-label="Young CEO home"
+            className="shrink-0"
+          >
+            <BrandLogo
+              size={40}
+              className="h-10 w-10 rounded-[0.85rem] shadow-[0_6px_18px_rgba(88,28,135,0.28)]"
+            />
+          </Link>
+          <Link
+            href={profileHref}
+            prefetch
+            className="flex min-w-0 items-center gap-3"
+          >
+            <UserAvatar
+              src={avatarUrl}
+              name={name}
+              size={44}
+              className="ring-2 ring-white/15"
+            />
+            <div className="min-w-0">
+              <p className="truncate text-[15px] leading-tight text-muted">
+                Hello,{" "}
+                <span className="font-semibold text-foreground">
+                  {firstName}
+                </span>
+              </p>
+              {variant === "admin" ? (
+                <p className="text-[11px] text-muted">Admin</p>
+              ) : null}
+            </div>
+          </Link>
+        </div>
         <HeaderActions
           variant={variant}
           unreadCount={unreadCount}

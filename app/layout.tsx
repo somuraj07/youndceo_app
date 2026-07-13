@@ -16,6 +16,16 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Young CEO",
   description: "Financial Education & Wealth Management Platform",
+  applicationName: "Young CEO",
+  icons: {
+    icon: [{ url: "/brand/young-ceo-logo.png", type: "image/png" }],
+    apple: [{ url: "/brand/young-ceo-logo.png", type: "image/png" }],
+  },
+  openGraph: {
+    title: "Young CEO",
+    description: "Financial Education & Wealth Management Platform",
+    images: [{ url: "/brand/young-ceo-logo.png", width: 1024, height: 1024 }],
+  },
 };
 
 export default function RootLayout({
