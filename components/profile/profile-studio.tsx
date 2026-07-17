@@ -33,7 +33,10 @@ export type ProfileStudioUser = {
 
 export type ProfileStudioStats = {
   goals: number;
-  lessonsDone: number;
+  completed: number;
+  coursesDone: number;
+  challengesDone: number;
+  xp: number;
   savedPercent: number;
 };
 
@@ -368,9 +371,10 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
       </div>
 
       {!isAdmin ? (
-        <div className="mt-5 grid grid-cols-3 gap-2 px-1">
+        <div className="mt-5 grid grid-cols-4 gap-2 px-1">
           <Stat label="Goals" value={String(stats.goals)} />
-          <Stat label="Lessons" value={String(stats.lessonsDone)} />
+          <Stat label="Completed" value={String(stats.completed)} />
+          <Stat label="XP" value={stats.xp.toLocaleString("en-IN")} />
           <Stat label="Saved" value={`${stats.savedPercent}%`} />
         </div>
       ) : (
@@ -421,6 +425,34 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
             </p>
           ) : null}
         </div>
+
+        {!isAdmin ? (
+          <div className="profile-settings-card rounded-2xl p-4">
+            <p className="text-xs font-semibold tracking-wide text-muted uppercase">
+              Learning progress
+            </p>
+            <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-xl bg-white/5 p-3">
+                <p className="text-lg font-bold text-purple-soft">
+                  {stats.xp.toLocaleString("en-IN")}
+                </p>
+                <p className="text-[10px] text-muted">Total XP</p>
+              </div>
+              <div className="rounded-xl bg-white/5 p-3">
+                <p className="text-lg font-bold text-foreground">
+                  {stats.coursesDone}
+                </p>
+                <p className="text-[10px] text-muted">Courses</p>
+              </div>
+              <div className="rounded-xl bg-white/5 p-3">
+                <p className="text-lg font-bold text-foreground">
+                  {stats.challengesDone}
+                </p>
+                <p className="text-[10px] text-muted">Challenges</p>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

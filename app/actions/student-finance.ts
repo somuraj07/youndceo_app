@@ -35,6 +35,7 @@ export async function createGoal(
   try {
     const userId = await requireStudent();
     const title = formData.get("title")?.toString().trim();
+    const icon = formData.get("icon")?.toString().trim() || null;
     const targetAmount = Number(formData.get("targetAmount"));
     const currentAmount = Number(formData.get("currentAmount") ?? 0);
     const deadlineRaw = formData.get("deadline")?.toString().trim();
@@ -47,6 +48,7 @@ export async function createGoal(
       data: {
         userId,
         title,
+        icon,
         targetAmount,
         currentAmount: Number.isNaN(currentAmount) ? 0 : Math.max(0, currentAmount),
         deadline: deadlineRaw ? new Date(deadlineRaw) : null,
@@ -93,6 +95,41 @@ export async function updateGoalProgress(
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Failed to update goal.",
+    };
+  }
+}
+
+export async function depositToGoal(
+  _prev: FinanceActionState,
+  formData: FormData,
+): Promise<FinanceActionState> {
+  try {
+    const userId = await requireStudent();
+    const goalId = formData.get("goalId")?.toString();
+    const amount = Number(formData.get("amount"));
+
+    if (!goalId || Number.isNaN(amount) || amount <= 0) {
+      return { error: "Enter a valid amount to deposit." };
+    }
+
+    const goal = await prisma.goal.findFirst({
+      where: { id: goalId, userId },
+    });
+
+    if (!goal) {
+      return { error: "Goal not found." };
+    }
+
+    await prisma.goal.update({
+      where: { id: goalId },
+      data: { currentAmount: { increment: amount } },
+    });
+
+    await afterFinanceChange(userId);
+    return { success: `₹${amount.toLocaleString("en-IN")} added to goal.` };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Deposit failed.",
     };
   }
 }
@@ -201,13 +238,28 @@ export async function createSavingsAccount(
   try {
     const userId = await requireStudent();
     const name = formData.get("name")?.toString().trim();
+    const amount = Number(formData.get("amount"));
+    const rate = Number(formData.get("rate"));
+    const years = Number(formData.get("years"));
 
     if (!name) {
       return { error: "Account name is required." };
     }
 
+    if (Number.isNaN(amount) || amount <= 0) {
+      return { error: "Enter a valid deposit amount." };
+    }
+
+    if (Number.isNaN(rate) || rate <= 0 || rate > 100) {
+      return { error: "Enter a valid interest rate %." };
+    }
+
+    if (Number.isNaN(years) || years < 1 || years > 50) {
+      return { error: "Enter a valid number of years." };
+    }
+
     await prisma.savingsAccount.create({
-      data: { userId, name, balance: 0 },
+      data: { userId, name, balance: amount, rate, years },
     });
 
     await afterFinanceChange(userId);

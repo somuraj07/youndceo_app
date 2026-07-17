@@ -28,7 +28,14 @@ export default async function AdminSettingsPage() {
         role: user.role,
         streak: user.streak,
       }}
-      stats={{ goals: 0, lessonsDone: 0, savedPercent: 0 }}
+      stats={{
+        goals: 0,
+        completed: 0,
+        coursesDone: 0,
+        challengesDone: 0,
+        xp: user.xp,
+        savedPercent: 0,
+      }}
     />
   );
 }

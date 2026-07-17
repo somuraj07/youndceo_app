@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import {
   createGoal,
   deleteGoal,
+  depositToGoal,
   updateGoal,
   type FinanceActionState,
 } from "@/app/actions/student-finance";
@@ -94,28 +95,13 @@ export function GoalPlanner({
               placeholder="Goal name"
               className="w-full rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted focus:border-teal"
             />
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                name="targetAmount"
-                type="number"
-                required
-                min={1}
-                placeholder="Target amount"
-                className="w-full rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted focus:border-teal"
-              />
-              <input
-                name="currentAmount"
-                type="number"
-                min={0}
-                defaultValue={0}
-                placeholder="Already saved"
-                className="w-full rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted focus:border-teal"
-              />
-            </div>
             <input
-              name="deadline"
-              type="date"
-              className="w-full rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 text-sm text-foreground outline-none focus:border-teal"
+              name="targetAmount"
+              type="number"
+              required
+              min={1}
+              placeholder="Goal amount ₹"
+              className="w-full rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted focus:border-teal"
             />
             {createState.error ? (
               <p className="text-xs text-red">{createState.error}</p>
@@ -207,11 +193,17 @@ function GoalRow({
   icon: string;
 }) {
   const [editing, setEditing] = useState(false);
+  const [depositing, setDepositing] = useState(false);
   const [state, action, pending] = useActionState(updateGoal, initial);
+  const [depositState, depositAction, depositPending] = useActionState(
+    depositToGoal,
+    initial,
+  );
   const percent = Math.min(
     100,
     Math.round((goal.currentAmount / goal.targetAmount) * 100),
   );
+  const remaining = Math.max(0, goal.targetAmount - goal.currentAmount);
 
   if (editing) {
     return (
@@ -274,23 +266,28 @@ function GoalRow({
             <div>
               <p className="font-semibold text-foreground">{goal.title}</p>
               <p className="text-xs text-muted">
-                ₹{goal.currentAmount.toLocaleString()} saved of ₹
-                {goal.targetAmount.toLocaleString()}
+                ₹{goal.currentAmount.toLocaleString("en-IN")} of ₹
+                {goal.targetAmount.toLocaleString("en-IN")}
               </p>
             </div>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setEditing(true)}
-                className="text-[11px] text-teal"
-              >
-                Edit
-              </button>
-              <form action={deleteGoal.bind(null, goal.id)}>
-                <button type="submit" className="text-[11px] text-red">
-                  Delete
+            <div className="text-right">
+              <p className="text-lg font-bold" style={{ color }}>
+                {percent}%
+              </p>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditing(true)}
+                  className="text-[11px] text-teal"
+                >
+                  Edit
                 </button>
-              </form>
+                <form action={deleteGoal.bind(null, goal.id)}>
+                  <button type="submit" className="text-[11px] text-red">
+                    Remove
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
@@ -299,6 +296,59 @@ function GoalRow({
               style={{ width: `${percent}%`, background: color }}
             />
           </div>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <p className="text-xs text-muted">
+              {remaining > 0
+                ? `₹${remaining.toLocaleString("en-IN")} more to reach your goal`
+                : "Goal reached! 🎉"}
+            </p>
+            {!depositing ? (
+              <button
+                type="button"
+                onClick={() => setDepositing(true)}
+                className="btn-teal shrink-0 rounded-xl px-3 py-1.5 text-xs font-semibold"
+              >
+                + Deposit
+              </button>
+            ) : null}
+          </div>
+          {depositing ? (
+            <form
+              action={depositAction}
+              className="mt-2 flex items-center gap-2"
+            >
+              <input type="hidden" name="goalId" value={goal.id} />
+              <input
+                name="amount"
+                type="number"
+                required
+                min={1}
+                autoFocus
+                placeholder="Amount ₹"
+                className="w-full min-w-0 flex-1 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted focus:border-teal"
+              />
+              <button
+                type="submit"
+                disabled={depositPending}
+                className="btn-teal shrink-0 rounded-xl px-3 py-2 text-xs font-semibold disabled:opacity-60"
+              >
+                {depositPending ? "Adding…" : "Add"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setDepositing(false)}
+                className="shrink-0 rounded-xl bg-white/10 px-3 py-2 text-xs text-muted"
+              >
+                Cancel
+              </button>
+            </form>
+          ) : null}
+          {depositState.error ? (
+            <p className="mt-1 text-xs text-red">{depositState.error}</p>
+          ) : null}
+          {depositState.success ? (
+            <p className="mt-1 text-xs text-green">{depositState.success}</p>
+          ) : null}
         </div>
       </div>
     </article>

@@ -312,6 +312,85 @@ export function PolarBars({
   );
 }
 
+/** Multi-segment pie for category breakdown */
+export function CategoryPie({
+  segments,
+  size = 140,
+}: {
+  segments: { label: string; value: number; color: string }[];
+  size?: number;
+}) {
+  const total = segments.reduce((sum, seg) => sum + seg.value, 0);
+  if (total <= 0) {
+    return (
+      <div
+        className="flex items-center justify-center rounded-full bg-white/5 text-xs text-muted"
+        style={{ width: size, height: size }}
+      >
+        No data
+      </div>
+    );
+  }
+
+  const cx = 50;
+  const cy = 50;
+  const r = 38;
+  let angle = -Math.PI / 2;
+  const slices = segments.map((seg) => {
+    const sliceAngle = (seg.value / total) * Math.PI * 2;
+    const x1 = cx + r * Math.cos(angle);
+    const y1 = cy + r * Math.sin(angle);
+    angle += sliceAngle;
+    const x2 = cx + r * Math.cos(angle);
+    const y2 = cy + r * Math.sin(angle);
+    const large = sliceAngle > Math.PI ? 1 : 0;
+    const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
+    const percent = Math.round((seg.value / total) * 100);
+    return { ...seg, path, percent };
+  });
+
+  return (
+    <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-start">
+      <div className="relative shrink-0" style={{ width: size, height: size }}>
+        <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+          {slices.map((slice) => (
+            <path
+              key={slice.label}
+              d={slice.path}
+              fill={slice.color}
+              stroke="var(--background)"
+              strokeWidth="1.5"
+            />
+          ))}
+          <circle cx={cx} cy={cy} r="22" fill="var(--background)" />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <p className="text-lg font-bold text-foreground">
+            {segments.length}
+          </p>
+          <p className="text-[9px] text-muted">categories</p>
+        </div>
+      </div>
+      <div className="min-w-0 flex-1 space-y-2">
+        {slices.map((slice) => (
+          <div key={slice.label} className="flex items-center gap-2 text-xs">
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full"
+              style={{ background: slice.color }}
+            />
+            <span className="min-w-0 flex-1 truncate text-muted">
+              {slice.label}
+            </span>
+            <span className="font-semibold text-foreground">
+              {slice.percent}%
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** Horizontal stacked status bar */
 export function StatusRail({
   segments,

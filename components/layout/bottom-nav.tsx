@@ -28,11 +28,12 @@ const studentNav: NavItem[] = [
     href: "/home",
     label: "Plan",
     icon: IconHome,
-    match: (pathname) => pathname === "/home" || pathname.startsWith("/news"),
+    match: (pathname) => pathname === "/home",
   },
   { href: "/learn", label: "Learn", icon: IconLearn },
   { href: "/portfolio", label: "Portfolio", icon: IconWallet },
   { href: "/spend", label: "Spend", icon: IconSpend },
+  { href: "/news", label: "News", icon: IconNews },
   { href: "/profile", label: "Profile", icon: IconProfile },
 ];
 
@@ -43,7 +44,7 @@ const adminNav: NavItem[] = [
     icon: IconAdmin,
     match: (pathname) => pathname === "/admin",
   },
-  { href: "/admin/assignments", label: "Tasks", icon: IconChallenges },
+  { href: "/admin/assignments", label: "Learning", icon: IconChallenges },
   { href: "/admin/users", label: "Users", icon: IconUsers },
   { href: "/admin/news", label: "News", icon: IconNews },
   { href: "/admin/settings", label: "Settings", icon: IconSettings },

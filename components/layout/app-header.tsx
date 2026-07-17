@@ -1,6 +1,5 @@
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { HeaderActions } from "@/components/layout/header-actions";
-import { UserAvatar } from "@/components/ui/user-avatar";
 import {
   getUnreadNotificationCount,
   getUserNotifications,
@@ -16,7 +15,6 @@ type AppHeaderProps = {
 
 export async function AppHeader({
   name,
-  avatarUrl,
   userId,
   variant = "student",
 }: AppHeaderProps) {
@@ -54,14 +52,8 @@ export async function AppHeader({
           <Link
             href={profileHref}
             prefetch
-            className="flex min-w-0 items-center gap-3"
+            className="min-w-0"
           >
-            <UserAvatar
-              src={avatarUrl}
-              name={name}
-              size={44}
-              className="ring-2 ring-white/15"
-            />
             <div className="min-w-0">
               <p className="truncate text-[15px] leading-tight text-muted">
                 Hello,{" "}

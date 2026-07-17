@@ -2,7 +2,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/app/generated/prisma/client";
 
 // Bump when schema fields change so Turbopack/dev doesn't keep a stale client.
-const PRISMA_CLIENT_REVISION = "v3-driver-adapter";
+const PRISMA_CLIENT_REVISION = "v5-savings-rate";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;

@@ -50,17 +50,20 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  rank            Rank?                  @relation(fields: [rankId], references: [id], onDelete: SetNull)
-  accounts        Account[]
-  sessions        Session[]
-  submissions     AssignmentSubmission[]
-  goals           Goal[]
-  cashWallet      CashWallet?
-  savingsAccounts SavingsAccount[]
-  expenses        Expense[]
-  sipPlans        SipPlan[]
-  newsLikes       NewsLike[]
-  notifications   Notification[]
+  rank              Rank?                   @relation(fields: [rankId], references: [id], onDelete: SetNull)
+  accounts          Account[]
+  sessions          Session[]
+  submissions       AssignmentSubmission[]
+  goals             Goal[]
+  cashWallet        CashWallet?
+  savingsAccounts   SavingsAccount[]
+  expenses          Expense[]
+  sipPlans          SipPlan[]
+  newsLikes         NewsLike[]
+  notifications     Notification[]
+  courseProgress    CourseContentProgress[]
+  courseAwards      CourseCompletion[]
+  challengeAttempts ChallengeAttempt[]
 }
 
 model Assignment {
@@ -96,6 +99,123 @@ model AssignmentSubmission {
   assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
 
   @@unique([userId, assignmentId])
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  icon        String   @default("📘")
+  xpReward    Int      @default(200)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modules     CourseModule[]
+  completions CourseCompletion[]
+}
+
+model CourseModule {
+  id        String   @id @default(uuid())
+  courseId  String
+  title     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course   Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  contents CourseContent[]
+
+  @@index([courseId, sortOrder])
+}
+
+model CourseContent {
+  id        String   @id @default(uuid())
+  moduleId  String
+  title     String
+  body      String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  module   CourseModule            @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress CourseContentProgress[]
+
+  @@index([moduleId, sortOrder])
+}
+
+model CourseContentProgress {
+  id          String   @id @default(uuid())
+  userId      String
+  contentId   String
+  completedAt DateTime @default(now())
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content CourseContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId])
+  @@index([userId])
+}
+
+model CourseCompletion {
+  id          String   @id @default(uuid())
+  userId      String
+  courseId    String
+  xpEarned    Int
+  completedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+}
+
+model Challenge {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  icon        String   @default("🏆")
+  xpReward    Int      @default(200)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  questions ChallengeQuestion[]
+  attempts  ChallengeAttempt[]
+}
+
+model ChallengeQuestion {
+  id            String   @id @default(uuid())
+  challengeId   String
+  question      String
+  options       Json
+  correctAnswer String
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@index([challengeId, sortOrder])
+}
+
+model ChallengeAttempt {
+  id          String   @id @default(uuid())
+  userId      String
+  challengeId String
+  answers     Json
+  score       Int
+  xpEarned    Int
+  completedAt DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@index([userId])
 }
 
 model Rank {
@@ -188,6 +308,7 @@ model Goal {
   id            String    @id @default(uuid())
   userId        String
   title         String
+  icon          String?
   targetAmount  Float
   currentAmount Float     @default(0)
   deadline      DateTime?
@@ -212,6 +333,8 @@ model SavingsAccount {
   userId    String
   name      String
   balance   Float    @default(0)
+  rate      Float    @default(6.5)
+  years     Int      @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

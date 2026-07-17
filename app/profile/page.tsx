@@ -17,15 +17,22 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const [goals, lessonsDone] = await Promise.all([
-    prisma.goal.findMany({
-      where: { userId: session.user.id },
-      select: { currentAmount: true, targetAmount: true },
-    }),
-    prisma.assignmentSubmission.count({
-      where: { userId: session.user.id, status: "APPROVED" },
-    }),
-  ]);
+  const [goals, legacyLessons, courseCompletions, challengeCompletions] =
+    await Promise.all([
+      prisma.goal.findMany({
+        where: { userId: session.user.id },
+        select: { currentAmount: true, targetAmount: true },
+      }),
+      prisma.assignmentSubmission.count({
+        where: { userId: session.user.id, status: "APPROVED" },
+      }),
+      prisma.courseCompletion.count({
+        where: { userId: session.user.id },
+      }),
+      prisma.challengeAttempt.count({
+        where: { userId: session.user.id },
+      }),
+    ]);
 
   const saved = goals.reduce((sum, g) => sum + g.currentAmount, 0);
   const target = goals.reduce((sum, g) => sum + g.targetAmount, 0);
@@ -46,7 +53,10 @@ export default async function ProfilePage() {
       }}
       stats={{
         goals: goals.length,
-        lessonsDone,
+        completed: legacyLessons + courseCompletions + challengeCompletions,
+        coursesDone: courseCompletions,
+        challengesDone: challengeCompletions,
+        xp: user.xp,
         savedPercent,
       }}
     />

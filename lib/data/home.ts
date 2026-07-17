@@ -150,25 +150,13 @@ async function loadPortfolioData(userId: string) {
     }),
   ]);
 
-  const [funds, sipPlans] = await Promise.all([
-    prisma.fund.findMany({
-      where: { isActive: true },
-      orderBy: { name: "asc" },
-      take: 12,
-    }),
-    prisma.sipPlan.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-    }),
-  ]);
-
   const cashWallet =
     existingWallet ??
     (await prisma.cashWallet.create({
       data: { userId, balance: 0 },
     }));
 
-  return { cashWallet, savingsAccounts, funds, sipPlans };
+  return { cashWallet, savingsAccounts };
 }
 
 async function loadSpendData(userId: string) {

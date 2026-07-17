@@ -397,6 +397,17 @@ html[data-theme="dark"] .money-pad-input,
   appearance: none;
 }
 
+.no-number-spinner {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.no-number-spinner::-webkit-inner-spin-button,
+.no-number-spinner::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
 html[data-theme="light"] .bg-white\/5,
 html[data-theme="light"] .bg-white\/10 {
   background-color: rgba(255, 255, 255, 0.32) !important;

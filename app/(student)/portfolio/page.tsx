@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getPortfolioData } from "@/lib/data/home";
 import { PortfolioPanel } from "@/components/student/portfolio-panel";
+import { isAdmin } from "@/lib/permissions";
 
 export default async function PortfolioPage() {
   const session = await auth();
@@ -10,28 +11,21 @@ export default async function PortfolioPage() {
     redirect("/login");
   }
 
+  if (isAdmin(session.user.role)) {
+    redirect("/admin");
+  }
+
   const data = await getPortfolioData(session.user.id);
 
   return (
     <PortfolioPanel
+      piggyBalance={data.cashWallet.balance}
       savings={data.savingsAccounts.map((a) => ({
         id: a.id,
         name: a.name,
         balance: a.balance,
-      }))}
-      funds={data.funds.map((f) => ({
-        id: f.id,
-        name: f.name,
-        symbol: f.symbol,
-        price: f.price,
-      }))}
-      sips={data.sipPlans.map((s) => ({
-        id: s.id,
-        name: s.name,
-        monthlyAmount: s.monthlyAmount,
-        expectedRate: s.expectedRate,
-        years: s.years,
-        fundSymbol: s.fundSymbol,
+        rate: a.rate,
+        years: a.years,
       }))}
     />
   );
