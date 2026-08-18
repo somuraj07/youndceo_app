@@ -40,12 +40,11 @@ export type ProfileStudioStats = {
   savedPercent: number;
 };
 
-type Mode = "profile" | "edit" | "settings";
+type Mode = "profile" | "edit";
 
 type ProfileStudioProps = {
   user: ProfileStudioUser;
   stats: ProfileStudioStats;
-  settingsHref?: string;
 };
 
 export function ProfileStudio({ user, stats }: ProfileStudioProps) {
@@ -189,157 +188,6 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
     );
   }
 
-  if (mode === "settings") {
-    return (
-      <div className="profile-studio fade-up mx-auto max-w-lg space-y-5">
-        <header className="flex items-center gap-3 px-1">
-          <button
-            type="button"
-            onClick={() => setMode("profile")}
-            className="profile-icon-btn"
-            aria-label="Back"
-          >
-            ←
-          </button>
-          <h1 className="flex-1 text-center text-lg font-semibold text-foreground">
-            My Settings
-          </h1>
-          <span className="w-10" />
-        </header>
-
-        <button
-          type="button"
-          onClick={() => setMode("edit")}
-          className="profile-settings-card flex w-full items-center gap-3 rounded-2xl p-3 text-left"
-        >
-          <UserAvatar src={displayAvatar} name={displayName} size={48} />
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold text-foreground">{displayName}</p>
-            <p className="truncate text-xs text-muted">{user.email}</p>
-          </div>
-          <span className="text-muted">›</span>
-        </button>
-
-        <div className="profile-promo rounded-2xl p-4">
-          <p className="text-sm font-semibold text-white">Young CEO Hub</p>
-          <p className="mt-1 text-xs text-white/80">
-            Learn · Save · Invest — your money skills workspace.
-          </p>
-        </div>
-
-        <section className="space-y-2">
-          <p className="px-1 text-xs font-semibold tracking-wide text-muted uppercase">
-            General
-          </p>
-          <div className="profile-settings-card overflow-hidden rounded-2xl">
-            <Link href="/news" className="settings-row">
-              <span className="settings-row-icon">
-                <IconBell className="h-4 w-4" />
-              </span>
-              <span className="flex-1 text-sm text-foreground">Notifications</span>
-              <span className="text-muted">›</span>
-            </Link>
-            <Link href="/learn" className="settings-row">
-              <span className="settings-row-icon">
-                <IconLearn className="h-4 w-4" />
-              </span>
-              <span className="flex-1 text-sm text-foreground">Learning</span>
-              <span className="text-muted">›</span>
-            </Link>
-            <Link href="/portfolio" className="settings-row">
-              <span className="settings-row-icon">
-                <IconWallet className="h-4 w-4" />
-              </span>
-              <span className="flex-1 text-sm text-foreground">Portfolio</span>
-              <span className="text-muted">›</span>
-            </Link>
-            <div className="settings-row">
-              <span className="settings-row-icon">
-                <IconSettings className="h-4 w-4" />
-              </span>
-              <span className="flex-1 text-sm text-foreground">Dark Mode</span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={resolved === "dark"}
-                onClick={() =>
-                  setPreference(resolved === "dark" ? "light" : "dark")
-                }
-                className={`theme-switch ${resolved === "dark" ? "theme-switch-on" : ""}`}
-              >
-                <span className="theme-switch-knob" />
-              </button>
-            </div>
-            <div className="settings-row border-0">
-              <span className="settings-row-icon">
-                <IconProfile className="h-4 w-4" />
-              </span>
-              <span className="flex-1 text-sm text-foreground">Theme</span>
-              <span className="text-xs capitalize text-muted">{preference}</span>
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-2">
-          <p className="px-1 text-xs font-semibold tracking-wide text-muted uppercase">
-            Security
-          </p>
-          <form
-            action={passwordAction}
-            className="profile-settings-card space-y-3 rounded-2xl p-4"
-          >
-            <p className="text-sm font-medium text-foreground">Reset password</p>
-            <input
-              name="currentPassword"
-              type="password"
-              placeholder="Current password"
-              required
-              className="profile-field w-full"
-            />
-            <input
-              name="newPassword"
-              type="password"
-              placeholder="New password"
-              minLength={8}
-              required
-              className="profile-field w-full"
-            />
-            <input
-              name="confirmPassword"
-              type="password"
-              placeholder="Confirm new password"
-              minLength={8}
-              required
-              className="profile-field w-full"
-            />
-            {passwordState.error ? (
-              <p className="text-sm text-red">{passwordState.error}</p>
-            ) : null}
-            {passwordState.success ? (
-              <p className="text-sm text-green">{passwordState.success}</p>
-            ) : null}
-            <button
-              type="submit"
-              disabled={passwordPending}
-              className="w-full rounded-xl border border-border bg-white/5 px-4 py-2.5 text-sm font-medium text-foreground disabled:opacity-60"
-            >
-              {passwordPending ? "Updating..." : "Update password"}
-            </button>
-          </form>
-        </section>
-
-        <form action={logout}>
-          <button
-            type="submit"
-            className="w-full rounded-2xl border border-red/30 bg-red/10 px-4 py-3.5 text-sm font-semibold text-red"
-          >
-            Sign out
-          </button>
-        </form>
-      </div>
-    );
-  }
-
   return (
     <div className="profile-studio fade-up mx-auto max-w-lg">
       <div className="relative">
@@ -381,22 +229,14 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
         <p className="mt-5 px-1 text-center text-sm text-muted">{user.email}</p>
       )}
 
-      <div className="mt-5 flex items-center gap-2 px-1">
+      <div className="mt-5 px-1">
         <button
           type="button"
           onClick={() => setMode("edit")}
-          className="profile-primary-btn flex flex-1 items-center justify-center gap-2"
+          className="profile-primary-btn flex w-full items-center justify-center gap-2"
         >
           <span aria-hidden>✎</span>
           Edit Profile
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("settings")}
-          className="profile-icon-btn h-12 w-12 shrink-0"
-          aria-label="Settings"
-        >
-          <IconSettings className="h-5 w-5" />
         </button>
       </div>
 
@@ -453,6 +293,116 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
             </div>
           </div>
         ) : null}
+
+        <section className="space-y-2">
+          <p className="text-xs font-semibold tracking-wide text-muted uppercase">
+            Preferences
+          </p>
+          <div className="profile-settings-card overflow-hidden rounded-2xl">
+            <Link href="/news" className="settings-row">
+              <span className="settings-row-icon">
+                <IconBell className="h-4 w-4" />
+              </span>
+              <span className="flex-1 text-sm text-foreground">Notifications</span>
+              <span className="text-muted">›</span>
+            </Link>
+            <Link href="/learn" className="settings-row">
+              <span className="settings-row-icon">
+                <IconLearn className="h-4 w-4" />
+              </span>
+              <span className="flex-1 text-sm text-foreground">Learning</span>
+              <span className="text-muted">›</span>
+            </Link>
+            <Link href="/portfolio" className="settings-row">
+              <span className="settings-row-icon">
+                <IconWallet className="h-4 w-4" />
+              </span>
+              <span className="flex-1 text-sm text-foreground">Portfolio</span>
+              <span className="text-muted">›</span>
+            </Link>
+            <div className="settings-row">
+              <span className="settings-row-icon">
+                <IconSettings className="h-4 w-4" />
+              </span>
+              <span className="flex-1 text-sm text-foreground">Dark Mode</span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={resolved === "dark"}
+                onClick={() =>
+                  setPreference(resolved === "dark" ? "light" : "dark")
+                }
+                className={`theme-switch ${resolved === "dark" ? "theme-switch-on" : ""}`}
+              >
+                <span className="theme-switch-knob" />
+              </button>
+            </div>
+            <div className="settings-row border-0">
+              <span className="settings-row-icon">
+                <IconProfile className="h-4 w-4" />
+              </span>
+              <span className="flex-1 text-sm text-foreground">Theme</span>
+              <span className="text-xs capitalize text-muted">{preference}</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-2">
+          <p className="text-xs font-semibold tracking-wide text-muted uppercase">
+            Security
+          </p>
+          <form
+            action={passwordAction}
+            className="profile-settings-card space-y-3 rounded-2xl p-4"
+          >
+            <p className="text-sm font-medium text-foreground">Reset password</p>
+            <input
+              name="currentPassword"
+              type="password"
+              placeholder="Current password"
+              required
+              className="profile-field w-full"
+            />
+            <input
+              name="newPassword"
+              type="password"
+              placeholder="New password"
+              minLength={8}
+              required
+              className="profile-field w-full"
+            />
+            <input
+              name="confirmPassword"
+              type="password"
+              placeholder="Confirm new password"
+              minLength={8}
+              required
+              className="profile-field w-full"
+            />
+            {passwordState.error ? (
+              <p className="text-sm text-red">{passwordState.error}</p>
+            ) : null}
+            {passwordState.success ? (
+              <p className="text-sm text-green">{passwordState.success}</p>
+            ) : null}
+            <button
+              type="submit"
+              disabled={passwordPending}
+              className="w-full rounded-xl border border-border bg-white/5 px-4 py-2.5 text-sm font-medium text-foreground disabled:opacity-60"
+            >
+              {passwordPending ? "Updating..." : "Update password"}
+            </button>
+          </form>
+        </section>
+
+        <form action={logout}>
+          <button
+            type="submit"
+            className="w-full rounded-2xl border border-red/30 bg-red/10 px-4 py-3.5 text-sm font-semibold text-red"
+          >
+            Sign out
+          </button>
+        </form>
       </div>
     </div>
   );

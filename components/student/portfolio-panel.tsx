@@ -12,6 +12,8 @@ import {
 const initial: FinanceActionState = {};
 const fieldClass =
   "w-full rounded-full border border-white/10 bg-white/10 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted focus:border-purple";
+const mfFieldClass =
+  "w-full rounded-full border border-teal/20 bg-teal/5 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted focus:border-teal";
 
 type SavingsItem = {
   id: string;
@@ -41,38 +43,58 @@ function ActionMessage({ state }: { state: FinanceActionState }) {
   return null;
 }
 
+type PortfolioTab = "piggy" | "savings" | "mutual";
+
+const portfolioTabs: { id: PortfolioTab; label: string }[] = [
+  { id: "piggy", label: "Piggy" },
+  { id: "savings", label: "Savings" },
+  { id: "mutual", label: "Funds" },
+];
+
 export function PortfolioPanel({
   piggyBalance,
   savings,
+  mutualFunds,
 }: {
   piggyBalance: number;
   savings: SavingsItem[];
+  mutualFunds: SavingsItem[];
 }) {
-  const [tab, setTab] = useState<"piggy" | "savings">("piggy");
+  const [tab, setTab] = useState<PortfolioTab>("piggy");
 
   return (
     <div className="space-y-4">
-      <div className="money-pad-toggle fade-up">
-        <button
-          type="button"
-          onClick={() => setTab("piggy")}
-          className={tab === "piggy" ? "money-pad-toggle-active" : ""}
-          aria-pressed={tab === "piggy"}
-        >
-          🐷 Piggy Bank
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("savings")}
-          className={tab === "savings" ? "money-pad-toggle-active" : ""}
-          aria-pressed={tab === "savings"}
-        >
-          💎 Savings
-        </button>
-      </div>
+      <header className="portfolio-nav fade-up">
+        <div className="portfolio-nav-head">
+          <h1 className="text-lg font-semibold tracking-tight text-foreground">
+            Portfolio
+          </h1>
+          <p className="text-xs text-muted">Save & invest</p>
+        </div>
+        <nav className="portfolio-nav-tabs" aria-label="Portfolio sections">
+          {portfolioTabs.map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setTab(id)}
+              className={
+                tab === id ? "portfolio-nav-tab portfolio-nav-tab-active" : "portfolio-nav-tab"
+              }
+              aria-pressed={tab === id}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+      </header>
 
       {tab === "piggy" ? <PiggyBank balance={piggyBalance} /> : null}
-      {tab === "savings" ? <SavingsSection accounts={savings} /> : null}
+      {tab === "savings" ? (
+        <SavingsSection accounts={savings} kind="SAVINGS" />
+      ) : null}
+      {tab === "mutual" ? (
+        <MutualFundsSection accounts={mutualFunds} />
+      ) : null}
     </div>
   );
 }
@@ -142,7 +164,13 @@ function PiggyBank({ balance }: { balance: number }) {
   );
 }
 
-function SavingsSection({ accounts }: { accounts: SavingsItem[] }) {
+function SavingsSection({
+  accounts,
+  kind,
+}: {
+  accounts: SavingsItem[];
+  kind: "SAVINGS" | "MUTUAL_FUND";
+}) {
   const [state, action, pending] = useActionState(
     createSavingsAccount,
     initial,
@@ -151,6 +179,7 @@ function SavingsSection({ accounts }: { accounts: SavingsItem[] }) {
   return (
     <section className="space-y-4">
       <form action={action} className="glass rounded-3xl p-4">
+        <input type="hidden" name="kind" value={kind} />
         <h2 className="font-semibold text-foreground">
           Open a Savings Account
         </h2>
@@ -221,6 +250,99 @@ function SavingsSection({ accounts }: { accounts: SavingsItem[] }) {
   );
 }
 
+function MutualFundsSection({ accounts }: { accounts: SavingsItem[] }) {
+  const [state, action, pending] = useActionState(
+    createSavingsAccount,
+    initial,
+  );
+
+  return (
+    <section className="space-y-4">
+      <form
+        action={action}
+        className="rounded-3xl border border-teal/20 bg-gradient-to-br from-teal/10 via-transparent to-cyan/5 p-4"
+      >
+        <input type="hidden" name="kind" value="MUTUAL_FUND" />
+        <div className="flex items-center gap-2">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal/20 text-lg">
+            📈
+          </span>
+          <div>
+            <h2 className="font-semibold text-foreground">
+              Start a Mutual Fund Plan
+            </h2>
+            <p className="text-xs text-muted">
+              Invest a lump sum and track projected growth.
+            </p>
+          </div>
+        </div>
+        <input
+          name="name"
+          required
+          placeholder="Fund name (e.g. Nifty 50 Index)"
+          className={`mt-4 ${mfFieldClass}`}
+        />
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          <input
+            name="amount"
+            type="number"
+            inputMode="decimal"
+            min={1}
+            step="0.01"
+            required
+            placeholder="₹ Invested"
+            className={mfFieldClass}
+          />
+          <input
+            name="rate"
+            type="number"
+            inputMode="decimal"
+            min={0.1}
+            max={100}
+            step="0.1"
+            required
+            placeholder="Return %"
+            className={mfFieldClass}
+          />
+          <input
+            name="years"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={50}
+            required
+            placeholder="Years"
+            className={mfFieldClass}
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={pending}
+          className="mt-3 w-full rounded-full bg-teal/90 py-3 text-sm font-semibold text-white disabled:opacity-50"
+        >
+          {pending ? "Adding…" : "Add Fund Plan"}
+        </button>
+        <div className="mt-3">
+          <ActionMessage state={state} />
+        </div>
+      </form>
+
+      {accounts.length === 0 ? (
+        <div className="rounded-3xl border border-teal/15 bg-teal/5 p-6 text-center">
+          <p className="text-3xl">📈</p>
+          <p className="mt-2 text-sm text-muted">
+            Add your first mutual fund plan to see long-term growth projections.
+          </p>
+        </div>
+      ) : (
+        accounts.map((account) => (
+          <MutualFundCard key={account.id} account={account} />
+        ))
+      )}
+    </section>
+  );
+}
+
 function SavingsCard({ account }: { account: SavingsItem }) {
   const maturity = account.balance * Math.pow(1 + account.rate / 100, account.years);
   const gainPercent =
@@ -268,6 +390,71 @@ function SavingsCard({ account }: { account: SavingsItem }) {
           <p className="text-[10px] uppercase text-green">Interest</p>
           <p className="mt-1 text-sm font-bold text-green">+{gainPercent}%</p>
         </div>
+      </div>
+    </article>
+  );
+}
+
+function MutualFundCard({ account }: { account: SavingsItem }) {
+  const projected =
+    account.balance * Math.pow(1 + account.rate / 100, account.years);
+  const gainPercent =
+    account.balance > 0
+      ? Math.round(((projected - account.balance) / account.balance) * 100)
+      : 0;
+
+  return (
+    <article className="overflow-hidden rounded-3xl border border-teal/20 bg-gradient-to-br from-teal/10 to-transparent">
+      <div className="border-b border-teal/10 p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal/20 text-sm">
+                📈
+              </span>
+              <p className="truncate font-semibold text-foreground">
+                {account.name}
+              </p>
+            </div>
+            <p className="mt-1 pl-10 text-xs text-teal">
+              {account.rate}% expected return · {account.years} year
+              {account.years === 1 ? "" : "s"}
+            </p>
+          </div>
+          <form action={deleteSavingsAccount.bind(null, account.id)}>
+            <button
+              type="submit"
+              aria-label={`Delete ${account.name}`}
+              className="text-muted hover:text-red"
+            >
+              🗑
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 divide-x divide-teal/10">
+        <div className="p-4 text-center">
+          <p className="text-[10px] font-semibold tracking-wide text-muted uppercase">
+            Invested
+          </p>
+          <p className="mt-1 text-lg font-bold text-foreground">
+            {formatInr(account.balance)}
+          </p>
+        </div>
+        <div className="p-4 text-center">
+          <p className="text-[10px] font-semibold tracking-wide text-teal uppercase">
+            Projected Value
+          </p>
+          <p className="mt-1 text-lg font-bold text-teal">
+            {formatInr(projected)}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between border-t border-teal/10 bg-teal/5 px-4 py-2.5">
+        <span className="text-xs text-muted">Total growth</span>
+        <span className="text-sm font-bold text-green">+{gainPercent}%</span>
       </div>
     </article>
   );

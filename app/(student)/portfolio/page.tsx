@@ -20,13 +20,24 @@ export default async function PortfolioPage() {
   return (
     <PortfolioPanel
       piggyBalance={data.cashWallet.balance}
-      savings={data.savingsAccounts.map((a) => ({
-        id: a.id,
-        name: a.name,
-        balance: a.balance,
-        rate: a.rate,
-        years: a.years,
-      }))}
+      savings={data.savingsAccounts
+        .filter((a) => a.kind === "SAVINGS")
+        .map((a) => ({
+          id: a.id,
+          name: a.name,
+          balance: a.balance,
+          rate: a.rate,
+          years: a.years,
+        }))}
+      mutualFunds={data.savingsAccounts
+        .filter((a) => a.kind === "MUTUAL_FUND")
+        .map((a) => ({
+          id: a.id,
+          name: a.name,
+          balance: a.balance,
+          rate: a.rate,
+          years: a.years,
+        }))}
     />
   );
 }

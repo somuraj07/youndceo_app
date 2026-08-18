@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getHomePageData } from "@/lib/data/home";
 import { HomeGoals } from "@/components/student/home-goals";
+import { HomeQuickNav } from "@/components/student/home-quick-nav";
 import { MarketPulse } from "@/components/student/market-pulse";
 
 export default async function PlanHomePage() {
@@ -37,6 +38,8 @@ export default async function PlanHomePage() {
           }))}
         />
       </div>
+
+      <HomeQuickNav />
     </div>
   );
 }

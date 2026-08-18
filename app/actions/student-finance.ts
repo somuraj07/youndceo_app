@@ -258,12 +258,20 @@ export async function createSavingsAccount(
       return { error: "Enter a valid number of years." };
     }
 
+    const kindRaw = formData.get("kind")?.toString();
+    const kind = kindRaw === "MUTUAL_FUND" ? "MUTUAL_FUND" : "SAVINGS";
+
     await prisma.savingsAccount.create({
-      data: { userId, name, balance: amount, rate, years },
+      data: { userId, name, balance: amount, rate, years, kind },
     });
 
     await afterFinanceChange(userId);
-    return { success: "Savings account created." };
+    return {
+      success:
+        kind === "MUTUAL_FUND"
+          ? "Mutual fund plan added."
+          : "Savings account created.",
+    };
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Failed to create account.",

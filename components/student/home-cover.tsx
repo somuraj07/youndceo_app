@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   IconLearn,
   IconNews,
+  IconProfile,
   IconSpend,
   IconWallet,
 } from "@/components/ui/icons";
@@ -104,12 +105,13 @@ export function HomeCover({
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-5 gap-2">
           {[
             { href: "/learn", label: "Learn", icon: IconLearn },
             { href: "/portfolio", label: "Invest", icon: IconWallet },
             { href: "/spend", label: "Spend", icon: IconSpend },
             { href: "/news", label: "News", icon: IconNews },
+            { href: "/profile", label: "Profile", icon: IconProfile },
           ].map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
