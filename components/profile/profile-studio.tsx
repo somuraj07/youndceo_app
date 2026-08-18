@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useRef, useState } from "react";
 import {
   updatePassword,
   updateProfile,
@@ -48,6 +49,7 @@ type ProfileStudioProps = {
 };
 
 export function ProfileStudio({ user, stats }: ProfileStudioProps) {
+  const router = useRouter();
   const [mode, setMode] = useState<Mode>("profile");
   const [profileState, profileAction, profilePending] = useActionState(
     updateProfile,
@@ -60,13 +62,42 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
   const { preference, resolved, setPreference } = useTheme();
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
 
-  const displayAvatar = profileState.avatarUrl ?? user.avatarUrl;
-  const displayCover = coverPreview ?? profileState.coverUrl ?? user.coverUrl;
+  const displayAvatar =
+    avatarPreview ?? profileState.avatarUrl ?? user.avatarUrl;
+  const displayCover =
+    coverPreview ?? profileState.coverUrl ?? user.coverUrl;
   const displayName = profileState.name ?? user.name;
   const displayBio = profileState.bio ?? user.bio;
   const isAdmin = user.role === "ADMIN";
+
+  useEffect(() => {
+    if (!profileState.success) {
+      return;
+    }
+
+    setAvatarPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setCoverPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setMode("profile");
+    router.refresh();
+  }, [profileState.success, router]);
+
+  function onAvatarPicked(file: File | null) {
+    if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    if (!file) {
+      setAvatarPreview(null);
+      return;
+    }
+    setAvatarPreview(URL.createObjectURL(file));
+  }
 
   function onCoverPicked(file: File | null) {
     if (coverPreview) URL.revokeObjectURL(coverPreview);
@@ -77,13 +108,21 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
     setCoverPreview(URL.createObjectURL(file));
   }
 
+  function leaveEditMode() {
+    if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    if (coverPreview) URL.revokeObjectURL(coverPreview);
+    setAvatarPreview(null);
+    setCoverPreview(null);
+    setMode("profile");
+  }
+
   if (mode === "edit") {
     return (
       <div className="profile-studio fade-up mx-auto max-w-lg">
         <header className="mb-4 flex items-center gap-3 px-1">
           <button
             type="button"
-            onClick={() => setMode("profile")}
+            onClick={leaveEditMode}
             className="profile-icon-btn"
             aria-label="Back"
           >
@@ -95,7 +134,11 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
           <span className="w-10" />
         </header>
 
-        <form action={profileAction} className="space-y-5">
+        <form
+          action={profileAction}
+          encType="multipart/form-data"
+          className="space-y-5"
+        >
           <div className="relative">
             <div className="relative overflow-hidden rounded-[1.25rem]">
               <ProfileCover src={displayCover} edit />
@@ -111,7 +154,7 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
                 ref={coverInputRef}
                 name="cover"
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/gif"
                 className="hidden"
                 onChange={(e) => onCoverPicked(e.target.files?.[0] ?? null)}
               />
@@ -136,8 +179,9 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
                   ref={avatarInputRef}
                   name="avatar"
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
                   className="hidden"
+                  onChange={(e) => onAvatarPicked(e.target.files?.[0] ?? null)}
                 />
               </div>
               <p className="mt-3 text-center text-lg font-bold tracking-wide text-foreground uppercase">
@@ -419,6 +463,7 @@ function ProfileCover({
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
+        key={src}
         src={src}
         alt=""
         className={`profile-cover-img ${edit ? "profile-cover-edit" : ""}`}

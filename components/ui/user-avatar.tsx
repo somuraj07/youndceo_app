@@ -17,6 +17,7 @@ export function UserAvatar({
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
+        key={src}
         src={src}
         alt={name}
         width={size}

@@ -16,6 +16,39 @@ export type ProfileActionState = {
   bio?: string;
 };
 
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
+
+function getUploadedFile(formData: FormData, field: string): File | null {
+  const value = formData.get(field);
+  if (!(value instanceof File) || value.size === 0) {
+    return null;
+  }
+
+  const ext = value.name.split(".").pop()?.toLowerCase() ?? "";
+  const allowedExt = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
+
+  if (value.type && !ALLOWED_IMAGE_TYPES.has(value.type) && !allowedExt.has(ext)) {
+    throw new Error("Please upload a JPG, PNG, WebP, or GIF image.");
+  }
+
+  if (!value.type && !allowedExt.has(ext)) {
+    throw new Error("Please upload a JPG, PNG, WebP, or GIF image.");
+  }
+
+  if (value.size > MAX_IMAGE_BYTES) {
+    throw new Error("Images must be 5 MB or smaller.");
+  }
+
+  return value;
+}
+
 export async function updateProfile(
   _prev: ProfileActionState,
   formData: FormData,
@@ -29,11 +62,21 @@ export async function updateProfile(
   const name = formData.get("name")?.toString().trim();
   const email = formData.get("email")?.toString().trim().toLowerCase();
   const bio = formData.get("bio")?.toString().trim() ?? "";
-  const avatar = formData.get("avatar") as File | null;
-  const cover = formData.get("cover") as File | null;
 
   if (!name || !email) {
     return { error: "Name and email are required." };
+  }
+
+  let avatar: File | null = null;
+  let cover: File | null = null;
+
+  try {
+    avatar = getUploadedFile(formData, "avatar");
+    cover = getUploadedFile(formData, "cover");
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Invalid image file.",
+    };
   }
 
   const existing = await prisma.user.findFirst({
@@ -50,7 +93,7 @@ export async function updateProfile(
   let avatarUrl: string | undefined;
   let coverUrl: string | undefined;
 
-  if (avatar && avatar.size > 0) {
+  if (avatar) {
     try {
       const path = buildStoragePath(session.user.id, avatar.name);
       avatarUrl = await uploadToSupabase("avatars", path, avatar);
@@ -64,9 +107,9 @@ export async function updateProfile(
     }
   }
 
-  if (cover && cover.size > 0) {
+  if (cover) {
     try {
-      const path = `covers/${buildStoragePath(session.user.id, cover.name)}`;
+      const path = buildStoragePath(`covers/${session.user.id}`, cover.name);
       coverUrl = await uploadToSupabase("avatars", path, cover);
     } catch (error) {
       return {
