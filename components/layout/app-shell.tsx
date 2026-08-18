@@ -1,5 +1,6 @@
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/layout/bottom-nav";
+import { WhatsAppHelp } from "@/components/layout/whatsapp-help";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -38,6 +39,7 @@ export function AppShell({ children, variant, user }: AppShellProps) {
       </main>
 
       <BottomNav variant={variant} />
+      {!isAdmin ? <WhatsAppHelp /> : null}
     </div>
   );
 }
