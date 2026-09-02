@@ -15,6 +15,7 @@ type AppHeaderProps = {
 
 export async function AppHeader({
   name,
+  avatarUrl,
   userId,
   variant = "student",
 }: AppHeaderProps) {
@@ -55,7 +56,7 @@ export async function AppHeader({
             className="min-w-0"
           >
             <div className="min-w-0">
-              <p className="truncate text-[15px] leading-tight text-muted">
+              <p className="truncate text-base leading-tight text-muted">
                 Hello,{" "}
                 <span className="font-semibold text-foreground">
                   {firstName}
@@ -69,6 +70,9 @@ export async function AppHeader({
         </div>
         <HeaderActions
           variant={variant}
+          avatarUrl={avatarUrl}
+          name={name}
+          profileHref={profileHref}
           unreadCount={unreadCount}
           notifications={notifications.map((n) => ({
             id: n.id,

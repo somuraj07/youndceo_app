@@ -124,6 +124,14 @@ body {
   animation-play-state: paused;
 }
 
+.market-pulse-track {
+  animation: ticker-scroll 35s linear infinite;
+}
+
+.market-pulse-track:hover {
+  animation-play-state: paused;
+}
+
 /* Dark: Aura deep-violet canvas + soft blooms */
 html[data-theme="dark"] .app-gradient-bg,
 :root .app-gradient-bg {

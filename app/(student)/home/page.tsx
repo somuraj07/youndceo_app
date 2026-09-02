@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { getHomePageData } from "@/lib/data/home";
+import { getHomePageData, getPortfolioData } from "@/lib/data/home";
 import { HomeGoals } from "@/components/student/home-goals";
-import { HomeQuickNav } from "@/components/student/home-quick-nav";
+import { HomePortfolioSnapshot } from "@/components/student/home-quick-nav";
 import { MarketPulse } from "@/components/student/market-pulse";
 
 export default async function PlanHomePage() {
@@ -12,13 +12,23 @@ export default async function PlanHomePage() {
     redirect("/api/auth/signout?callbackUrl=/login");
   }
 
-  const data = await getHomePageData(session.user.id);
+  const [data, portfolio] = await Promise.all([
+    getHomePageData(session.user.id),
+    getPortfolioData(session.user.id),
+  ]);
 
   if (!data) {
     redirect("/api/auth/signout?callbackUrl=/login");
   }
 
   const { goals } = data;
+
+  const savingsTotal = portfolio.savingsAccounts
+    .filter((a) => a.kind === "SAVINGS")
+    .reduce((sum, a) => sum + a.balance, 0);
+  const fundsTotal = portfolio.savingsAccounts
+    .filter((a) => a.kind === "MUTUAL_FUND")
+    .reduce((sum, a) => sum + a.balance, 0);
 
   return (
     <div className="space-y-6">
@@ -39,7 +49,11 @@ export default async function PlanHomePage() {
         />
       </div>
 
-      <HomeQuickNav />
+      <HomePortfolioSnapshot
+        piggyBalance={portfolio.cashWallet.balance}
+        savingsTotal={savingsTotal}
+        fundsTotal={fundsTotal}
+      />
     </div>
   );
 }

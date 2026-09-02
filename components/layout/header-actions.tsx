@@ -1,27 +1,28 @@
 "use client";
 
-import { useTheme } from "@/components/theme/theme-provider";
+import Link from "next/link";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import type { HeaderNotification } from "@/components/layout/notification-bell";
+import { UserAvatar } from "@/components/ui/user-avatar";
 
 type HeaderActionsProps = {
   variant?: "student" | "admin";
   notifications?: HeaderNotification[];
   unreadCount?: number;
+  avatarUrl?: string | null;
+  name?: string;
+  profileHref?: string;
 };
 
 export function HeaderActions({
   variant = "student",
   notifications = [],
   unreadCount = 0,
+  avatarUrl,
+  name = "",
+  profileHref = "/profile",
 }: HeaderActionsProps) {
-  const { resolved, setPreference } = useTheme();
   const isAdmin = variant === "admin";
-  const isDark = resolved === "dark";
-
-  function toggleTheme() {
-    setPreference(isDark ? "light" : "dark");
-  }
 
   return (
     <div className="flex items-center gap-2.5">
@@ -31,17 +32,16 @@ export function HeaderActions({
           unreadCount={unreadCount}
         />
       ) : null}
-      <button
-        type="button"
-        onClick={toggleTheme}
-        className="header-icon-btn header-icon-btn-theme"
-        aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-        title={isDark ? "Light" : "Dark"}
-      >
-        <span className="text-lg leading-none" aria-hidden>
-          {isDark ? "☾" : "☀"}
-        </span>
-      </button>
+      {!isAdmin && name ? (
+        <Link
+          href={profileHref}
+          prefetch
+          aria-label="Go to profile"
+          className="header-icon-btn overflow-hidden p-0"
+        >
+          <UserAvatar src={avatarUrl} name={name} size={36} />
+        </Link>
+      ) : null}
     </div>
   );
 }

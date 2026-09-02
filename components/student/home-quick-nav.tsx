@@ -1,44 +1,72 @@
 import Link from "next/link";
-import {
-  IconLearn,
-  IconNews,
-  IconProfile,
-  IconSpend,
-  IconWallet,
-} from "@/components/ui/icons";
+import { IconWallet } from "@/components/ui/icons";
 
-const links = [
-  { href: "/learn", label: "Learn", icon: IconLearn },
-  { href: "/portfolio", label: "Invest", icon: IconWallet },
-  { href: "/spend", label: "Spend", icon: IconSpend },
-  { href: "/news", label: "News", icon: IconNews },
-  { href: "/profile", label: "Profile", icon: IconProfile },
-] as const;
+type HomePortfolioSnapshotProps = {
+  piggyBalance: number;
+  savingsTotal: number;
+  fundsTotal: number;
+};
 
-export function HomeQuickNav() {
+function formatInr(amount: number) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+export function HomePortfolioSnapshot({
+  piggyBalance,
+  savingsTotal,
+  fundsTotal,
+}: HomePortfolioSnapshotProps) {
+  const items = [
+    { label: "Piggy Bank", value: piggyBalance },
+    { label: "Savings", value: savingsTotal },
+    { label: "Mutual Funds", value: fundsTotal },
+  ];
+
+  const total = piggyBalance + savingsTotal + fundsTotal;
+
   return (
     <section className="fade-up space-y-3">
-      <div>
-        <h2 className="font-semibold text-foreground">Quick links</h2>
-        <p className="text-[11px] text-muted">Jump to any section</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Portfolio</h2>
+          <p className="text-sm text-muted">Your savings at a glance</p>
+        </div>
+        <Link
+          href="/portfolio"
+          prefetch
+          className="flex items-center gap-1.5 rounded-full bg-teal/15 px-3 py-1.5 text-sm font-medium text-teal"
+        >
+          <IconWallet className="h-4 w-4" />
+          View all
+        </Link>
       </div>
-      <div className="grid grid-cols-5 gap-2">
-        {links.map(({ href, label, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            prefetch
-            className="home-cover-chip flex flex-col items-center gap-1.5 rounded-2xl px-1 py-3 text-center transition"
-          >
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-foreground">
-              <Icon className="h-4 w-4" />
-            </span>
-            <span className="text-[10px] font-medium text-foreground">
-              {label}
-            </span>
-          </Link>
-        ))}
-      </div>
+
+      <Link
+        href="/portfolio"
+        prefetch
+        className="glass block rounded-2xl p-4 transition hover:bg-white/5"
+      >
+        <div className="mb-3 flex items-baseline justify-between">
+          <span className="text-sm font-medium text-muted">Total value</span>
+          <span className="text-xl font-bold text-foreground">
+            {formatInr(total)}
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          {items.map(({ label, value }) => (
+            <div key={label} className="text-center">
+              <p className="text-base font-bold text-foreground">
+                {formatInr(value)}
+              </p>
+              <p className="mt-0.5 text-sm text-muted">{label}</p>
+            </div>
+          ))}
+        </div>
+      </Link>
     </section>
   );
 }

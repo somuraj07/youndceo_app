@@ -61,14 +61,10 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
   );
   const { preference, resolved, setPreference } = useTheme();
   const avatarInputRef = useRef<HTMLInputElement>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
 
   const displayAvatar =
     avatarPreview ?? profileState.avatarUrl ?? user.avatarUrl;
-  const displayCover =
-    coverPreview ?? profileState.coverUrl ?? user.coverUrl;
   const displayName = profileState.name ?? user.name;
   const displayBio = profileState.bio ?? user.bio;
   const isAdmin = user.role === "ADMIN";
@@ -79,10 +75,6 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
     }
 
     setAvatarPreview((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return null;
-    });
-    setCoverPreview((prev) => {
       if (prev) URL.revokeObjectURL(prev);
       return null;
     });
@@ -99,20 +91,9 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
     setAvatarPreview(URL.createObjectURL(file));
   }
 
-  function onCoverPicked(file: File | null) {
-    if (coverPreview) URL.revokeObjectURL(coverPreview);
-    if (!file) {
-      setCoverPreview(null);
-      return;
-    }
-    setCoverPreview(URL.createObjectURL(file));
-  }
-
   function leaveEditMode() {
     if (avatarPreview) URL.revokeObjectURL(avatarPreview);
-    if (coverPreview) URL.revokeObjectURL(coverPreview);
     setAvatarPreview(null);
-    setCoverPreview(null);
     setMode("profile");
   }
 
@@ -128,7 +109,7 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
           >
             ←
           </button>
-          <h1 className="flex-1 text-center text-lg font-semibold text-foreground">
+          <h1 className="flex-1 text-center text-xl font-semibold text-foreground">
             Edit Profile
           </h1>
           <span className="w-10" />
@@ -139,55 +120,34 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
           encType="multipart/form-data"
           className="space-y-5"
         >
-          <div className="relative">
-            <div className="relative overflow-hidden rounded-[1.25rem]">
-              <ProfileCover src={displayCover} edit />
+          <div className="flex flex-col items-center px-4 pt-2">
+            <div className="relative">
+              <UserAvatar
+                src={displayAvatar}
+                name={displayName}
+                size={96}
+                className="ring-4 ring-[var(--background)]"
+              />
               <button
                 type="button"
-                className="profile-cover-edit-btn"
-                aria-label="Change cover"
-                onClick={() => coverInputRef.current?.click()}
+                className="profile-edit-fab"
+                aria-label="Change photo"
+                onClick={() => avatarInputRef.current?.click()}
               >
-                ✎ Cover
+                ✎
               </button>
               <input
-                ref={coverInputRef}
-                name="cover"
+                ref={avatarInputRef}
+                name="avatar"
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/gif"
                 className="hidden"
-                onChange={(e) => onCoverPicked(e.target.files?.[0] ?? null)}
+                onChange={(e) => onAvatarPicked(e.target.files?.[0] ?? null)}
               />
             </div>
-            <div className="relative -mt-12 flex flex-col items-center px-4">
-              <div className="relative">
-                <UserAvatar
-                  src={displayAvatar}
-                  name={displayName}
-                  size={96}
-                  className="ring-4 ring-[var(--background)]"
-                />
-                <button
-                  type="button"
-                  className="profile-edit-fab"
-                  aria-label="Change photo"
-                  onClick={() => avatarInputRef.current?.click()}
-                >
-                  ✎
-                </button>
-                <input
-                  ref={avatarInputRef}
-                  name="avatar"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  className="hidden"
-                  onChange={(e) => onAvatarPicked(e.target.files?.[0] ?? null)}
-                />
-              </div>
-              <p className="mt-3 text-center text-lg font-bold tracking-wide text-foreground uppercase">
-                {displayName}
-              </p>
-            </div>
+            <p className="mt-3 text-center text-xl font-bold tracking-wide text-foreground uppercase">
+              {displayName}
+            </p>
           </div>
 
           <div className="space-y-3 px-1">
@@ -200,7 +160,7 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
               required
             />
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-foreground">
+              <label className="mb-1.5 block text-base font-medium text-foreground">
                 Bio
               </label>
               <textarea
@@ -234,31 +194,26 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
 
   return (
     <div className="profile-studio fade-up mx-auto max-w-lg">
-      <div className="relative">
-        <ProfileCover src={displayCover} />
-        <div className="relative -mt-14 flex flex-col items-center px-4">
-          <div className="relative">
-            <UserAvatar
-              src={displayAvatar}
-              name={displayName}
-              size={104}
-              className="profile-avatar-ring"
-            />
-          </div>
-          <h1 className="mt-3 text-center text-xl font-bold tracking-wide text-foreground uppercase">
-            {displayName}
-          </h1>
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
-            <span className="profile-tag">
-              <IconLearn className="h-3.5 w-3.5" />
-              Learning
-            </span>
-            <span className="profile-tag">
-              <IconWallet className="h-3.5 w-3.5" />
-              Investing
-            </span>
-            {isAdmin ? <span className="profile-tag">Admin</span> : null}
-          </div>
+      <div className="flex flex-col items-center px-4 pt-2">
+        <UserAvatar
+          src={displayAvatar}
+          name={displayName}
+          size={104}
+          className="profile-avatar-ring"
+        />
+        <h1 className="mt-3 text-center text-2xl font-bold tracking-wide text-foreground uppercase">
+          {displayName}
+        </h1>
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+          <span className="profile-tag text-sm">
+            <IconLearn className="h-4 w-4" />
+            Learning
+          </span>
+          <span className="profile-tag text-sm">
+            <IconWallet className="h-4 w-4" />
+            Investing
+          </span>
+          {isAdmin ? <span className="profile-tag text-sm">Admin</span> : null}
         </div>
       </div>
 
@@ -285,7 +240,7 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
       </div>
 
       <div className="mt-6 space-y-3 px-1">
-        <div className="flex gap-4 border-b border-white/10 pb-2 text-sm">
+        <div className="flex gap-4 border-b border-white/10 pb-2 text-base">
           <span className="profile-tab-active">Overview</span>
           <Link href="/learn" className="text-muted">
             Learn
@@ -296,15 +251,15 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
         </div>
 
         <div className="profile-settings-card rounded-2xl p-4">
-          <p className="text-xs font-semibold tracking-wide text-muted uppercase">
+          <p className="text-sm font-semibold tracking-wide text-muted uppercase">
             About
           </p>
-          <p className="mt-2 text-sm text-foreground">
+          <p className="mt-2 text-base text-foreground">
             {displayBio?.trim() ||
               "Add a short bio about your finance goals and learning focus."}
           </p>
           {user.streak > 0 ? (
-            <p className="mt-3 text-xs text-teal">
+            <p className="mt-3 text-sm text-teal">
               {user.streak}-day learning streak
             </p>
           ) : null}
@@ -312,34 +267,34 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
 
         {!isAdmin ? (
           <div className="profile-settings-card rounded-2xl p-4">
-            <p className="text-xs font-semibold tracking-wide text-muted uppercase">
+            <p className="text-sm font-semibold tracking-wide text-muted uppercase">
               Learning progress
             </p>
             <div className="mt-3 grid grid-cols-3 gap-2 text-center">
               <div className="rounded-xl bg-white/5 p-3">
-                <p className="text-lg font-bold text-purple-soft">
+                <p className="text-xl font-bold text-purple-soft">
                   {stats.xp.toLocaleString("en-IN")}
                 </p>
-                <p className="text-[10px] text-muted">Total XP</p>
+                <p className="text-sm text-muted">Total XP</p>
               </div>
               <div className="rounded-xl bg-white/5 p-3">
-                <p className="text-lg font-bold text-foreground">
+                <p className="text-xl font-bold text-foreground">
                   {stats.coursesDone}
                 </p>
-                <p className="text-[10px] text-muted">Courses</p>
+                <p className="text-sm text-muted">Courses</p>
               </div>
               <div className="rounded-xl bg-white/5 p-3">
-                <p className="text-lg font-bold text-foreground">
+                <p className="text-xl font-bold text-foreground">
                   {stats.challengesDone}
                 </p>
-                <p className="text-[10px] text-muted">Challenges</p>
+                <p className="text-sm text-muted">Challenges</p>
               </div>
             </div>
           </div>
         ) : null}
 
         <section className="space-y-2">
-          <p className="text-xs font-semibold tracking-wide text-muted uppercase">
+          <p className="text-sm font-semibold tracking-wide text-muted uppercase">
             Preferences
           </p>
           <div className="profile-settings-card overflow-hidden rounded-2xl">
@@ -347,28 +302,28 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
               <span className="settings-row-icon">
                 <IconBell className="h-4 w-4" />
               </span>
-              <span className="flex-1 text-sm text-foreground">Notifications</span>
+              <span className="flex-1 text-base text-foreground">Notifications</span>
               <span className="text-muted">›</span>
             </Link>
             <Link href="/learn" className="settings-row">
               <span className="settings-row-icon">
                 <IconLearn className="h-4 w-4" />
               </span>
-              <span className="flex-1 text-sm text-foreground">Learning</span>
+              <span className="flex-1 text-base text-foreground">Learning</span>
               <span className="text-muted">›</span>
             </Link>
             <Link href="/portfolio" className="settings-row">
               <span className="settings-row-icon">
                 <IconWallet className="h-4 w-4" />
               </span>
-              <span className="flex-1 text-sm text-foreground">Portfolio</span>
+              <span className="flex-1 text-base text-foreground">Portfolio</span>
               <span className="text-muted">›</span>
             </Link>
             <div className="settings-row">
               <span className="settings-row-icon">
                 <IconSettings className="h-4 w-4" />
               </span>
-              <span className="flex-1 text-sm text-foreground">Dark Mode</span>
+              <span className="flex-1 text-base text-foreground">Dark Mode</span>
               <button
                 type="button"
                 role="switch"
@@ -385,21 +340,21 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
               <span className="settings-row-icon">
                 <IconProfile className="h-4 w-4" />
               </span>
-              <span className="flex-1 text-sm text-foreground">Theme</span>
-              <span className="text-xs capitalize text-muted">{preference}</span>
+              <span className="flex-1 text-base text-foreground">Theme</span>
+              <span className="text-sm capitalize text-muted">{preference}</span>
             </div>
           </div>
         </section>
 
         <section className="space-y-2">
-          <p className="text-xs font-semibold tracking-wide text-muted uppercase">
+          <p className="text-sm font-semibold tracking-wide text-muted uppercase">
             Security
           </p>
           <form
             action={passwordAction}
             className="profile-settings-card space-y-3 rounded-2xl p-4"
           >
-            <p className="text-sm font-medium text-foreground">Reset password</p>
+            <p className="text-base font-medium text-foreground">Reset password</p>
             <input
               name="currentPassword"
               type="password"
@@ -442,37 +397,13 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
         <form action={logout}>
           <button
             type="submit"
-            className="w-full rounded-2xl border border-red/30 bg-red/10 px-4 py-3.5 text-sm font-semibold text-red"
+            className="w-full rounded-2xl border border-red/30 bg-red/10 px-4 py-3.5 text-base font-semibold text-red"
           >
             Sign out
           </button>
         </form>
       </div>
     </div>
-  );
-}
-
-function ProfileCover({
-  src,
-  edit = false,
-}: {
-  src?: string | null;
-  edit?: boolean;
-}) {
-  if (src) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        key={src}
-        src={src}
-        alt=""
-        className={`profile-cover-img ${edit ? "profile-cover-edit" : ""}`}
-      />
-    );
-  }
-
-  return (
-    <div className={`profile-cover ${edit ? "profile-cover-edit" : ""}`} />
   );
 }
 
@@ -491,7 +422,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-medium text-foreground">
+      <label className="mb-1.5 block text-base font-medium text-foreground">
         {label}
       </label>
       <input
@@ -508,8 +439,8 @@ function Field({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center">
-      <p className="text-lg font-bold text-foreground">{value}</p>
-      <p className="text-[11px] text-muted">{label}</p>
+      <p className="text-xl font-bold text-foreground">{value}</p>
+      <p className="text-sm text-muted">{label}</p>
     </div>
   );
 }

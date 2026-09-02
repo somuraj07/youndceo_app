@@ -23,7 +23,7 @@ export const CacheKeys = {
   admin: (ver: number) => `yc:v1:admin:c${ver}`,
   adminUsers: (ver: number) => `yc:v1:admin:users:c${ver}`,
   adminAssignments: (ver: number) => `yc:v1:admin:assignments:c${ver}`,
-  market: "yc:v1:market:quotes",
+  market: "yc:v3:market:quotes",
   profile: (userId: string) => `yc:v1:profile:${userId}`,
   funds: (ver: number) => `yc:v1:funds:c${ver}`,
 } as const;

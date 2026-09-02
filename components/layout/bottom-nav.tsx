@@ -94,7 +94,7 @@ export function BottomNav({ variant }: BottomNavProps) {
               >
                 <Icon className="h-5 w-5" />
               </span>
-              <span className="nav-item-label truncate text-[9px] font-medium sm:text-[10px]">
+              <span className="nav-item-label truncate text-[11px] font-medium sm:text-xs">
                 {label}
               </span>
             </Link>

@@ -67,7 +67,7 @@ export function HomeGoals({ goals }: { goals: GoalItem[] }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-xl">🎯</span>
-          <h2 className="font-semibold text-foreground">My Goals</h2>
+          <h2 className="text-lg font-semibold text-foreground">My Goals</h2>
         </div>
         <button
           type="button"
@@ -109,7 +109,7 @@ export function HomeGoals({ goals }: { goals: GoalItem[] }) {
               ))}
             </div>
           </div>
-          <p className="text-[11px] text-muted">
+          <p className="text-sm text-muted">
             Tap the box and use your keyboard&apos;s emoji picker for any emoji.
           </p>
           <input
@@ -140,7 +140,7 @@ export function HomeGoals({ goals }: { goals: GoalItem[] }) {
       ) : null}
 
       {goals.length === 0 && !adding ? (
-        <p className="text-sm text-muted">
+        <p className="text-base text-muted">
           No goals yet — tap + to set your first goal.
         </p>
       ) : (
@@ -193,18 +193,18 @@ function GoalCard({
             {icon}
           </span>
           <div className="min-w-0">
-            <p className="truncate font-semibold text-foreground">{goal.title}</p>
-            <p className="text-xs text-muted">
+            <p className="truncate text-base font-semibold text-foreground">{goal.title}</p>
+            <p className="text-sm text-muted">
               {inr(goal.currentAmount)} of {inr(goal.targetAmount)}
             </p>
           </div>
         </div>
         <div className="shrink-0 text-right">
-          <p className="text-xl font-bold" style={{ color }}>
+          <p className="text-2xl font-bold" style={{ color }}>
             {percent}%
           </p>
           <form action={deleteGoal.bind(null, goal.id)}>
-            <button type="submit" className="text-[11px] text-red">
+            <button type="submit" className="text-sm text-red">
               remove
             </button>
           </form>
@@ -219,7 +219,7 @@ function GoalCard({
       </div>
 
       <div className="mt-2 flex items-center justify-between gap-2">
-        <p className="text-xs text-muted">
+        <p className="text-sm text-muted">
           {reached
             ? "🎉 Goal reached!"
             : `${inr(remaining)} more to reach your goal`}
@@ -228,7 +228,7 @@ function GoalCard({
           <button
             type="button"
             onClick={() => setDepositing(true)}
-            className="btn-teal rounded-xl px-3 py-1.5 text-xs font-semibold"
+            className="btn-teal rounded-xl px-3 py-1.5 text-sm font-semibold"
           >
             Deposit
           </button>
