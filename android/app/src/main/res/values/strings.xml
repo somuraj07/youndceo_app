@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Young CEO</string>
+    <string name="title_activity_main">Young CEO</string>
+    <string name="package_name">com.youngceo.app</string>
+    <string name="custom_url_scheme">com.youngceo.app</string>
+</resources>
