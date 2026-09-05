@@ -14,9 +14,9 @@ export default async function SpendPage() {
 
   return (
     <SpendPanel
-      monthExpenseTotal={data.monthNet}
+      monthExpenseTotal={data.monthExpenseTotal}
       monthIncomeTotal={data.monthIncomeTotal}
-      monthNet={data.monthExpenseTotal}
+      monthNet={data.monthNet}
       expenses={data.expenses.map((e) => ({
         id: e.id,
         title: e.title,

@@ -561,9 +561,9 @@ function ExpenseRow({ expense }: { expense: ExpenseItem }) {
     <article className="glass flex items-center justify-between gap-3 rounded-2xl px-4 py-3">
       <div className="min-w-0">
         <p className="truncate font-medium text-foreground">{expense.title}</p>
-        <p className="text-xs text-muted">
+        <p className="text-xs text-muted" suppressHydrationWarning>
           {isIncome ? "Income" : "Expense"} · {expense.category} ·{" "}
-          {new Date(expense.spentAt).toLocaleDateString()}
+          {new Date(expense.spentAt).toLocaleDateString("en-IN")}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-3">
