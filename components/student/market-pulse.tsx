@@ -24,26 +24,26 @@ function MarketCard({ quote, index }: { quote: MarketQuote; index: number }) {
   const graphColor = up ? "#22c55e" : "#ef4444";
 
   return (
-    <article className="glass flex h-44 w-36 shrink-0 flex-col items-start justify-center gap-2 rounded-2xl p-3.5">
-      <span className="text-sm font-semibold tracking-wider text-muted uppercase">
+    <article className="glass flex h-44 w-36 shrink-0 flex-col items-start justify-center gap-2 rounded-2xl p-3.5 md:h-52 md:w-52 md:gap-3 md:p-5 lg:h-56 lg:w-60 lg:gap-4 lg:p-6">
+      <span className="text-sm font-semibold tracking-wider text-muted uppercase md:text-base lg:text-lg">
         {quote.name}
       </span>
-      <span className="text-base font-bold whitespace-nowrap text-foreground">
+      <span className="text-base font-bold whitespace-nowrap text-foreground md:text-xl lg:text-2xl font-extrabold">
         {formatInrPrice(quote.price)}
       </span>
       <span
-        className={`text-sm font-semibold whitespace-nowrap ${
+        className={`text-sm font-semibold whitespace-nowrap md:text-base lg:text-lg ${
           up ? "text-green" : "text-red"
         }`}
       >
         {up ? "▲" : "▼"} {up ? "+" : "-"}
         {Math.abs(quote.changePercent).toFixed(2)}%
       </span>
-      <div className="mt-1 h-9 w-full">
+      <div className="mt-1 h-9 w-full md:h-12 lg:h-14">
         <AreaSpark
           values={sparkFromChange(quote.changePercent, index)}
           color={graphColor}
-          height={36}
+          height={44}
         />
       </div>
     </article>
@@ -91,45 +91,49 @@ export function MarketPulse() {
   const tickerCards = quotes.length > 0 ? [...quotes, ...quotes] : [];
 
   return (
-    <section className="max-w-full min-w-0 space-y-3 overflow-hidden">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple/20 text-purple-soft">
+    <section className="max-w-full min-w-0 space-y-3.5 overflow-hidden">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple/20 text-purple-soft md:h-12 md:w-12 lg:h-14 lg:w-14">
             <svg
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="1.8"
-              className="h-5 w-5"
+              className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7"
             >
               <path d="M4 19h16M6 16l3.5-5 3 3.5L17 7l3 3" />
             </svg>
           </span>
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Market Pulse</h2>
-            <p className="text-sm text-muted">Live Indian market overview</p>
+            <h2 className="text-lg font-semibold text-foreground md:text-2xl lg:text-3xl font-bold">
+              Market Pulse
+            </h2>
+            <p className="text-sm text-muted md:text-base lg:text-lg">
+              Live Indian market overview
+            </p>
           </div>
         </div>
         {!loading && quotes.length > 0 ? (
-          <span className="flex shrink-0 items-center gap-1.5 text-xs text-green">
-            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-green" />
+          <span className="flex shrink-0 items-center gap-2 text-xs font-semibold text-green md:text-sm lg:text-base md:px-3 md:py-1 md:rounded-full md:bg-green/10">
+            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-green md:h-2.5 md:w-2.5" />
             Live
           </span>
         ) : null}
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted">
+        <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted md:text-base">
           <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-purple" />
           Loading live prices…
         </div>
       ) : quotes.length === 0 ? (
-        <p className="py-8 text-center text-sm text-muted">
+        <p className="py-8 text-center text-sm text-muted md:text-base">
           Market prices unavailable right now. Please try again shortly.
         </p>
       ) : (
         <div className="overflow-hidden pb-1">
-          <div className="market-pulse-track flex w-max gap-3">
+          <div className="market-pulse-track flex w-max gap-3 md:gap-5">
             {tickerCards.map((quote, index) => (
               <MarketCard
                 key={`${quote.symbol}-${index}`}
@@ -142,7 +146,7 @@ export function MarketPulse() {
       )}
 
       {updatedAt ? (
-        <p className="text-xs text-muted">
+        <p className="text-xs text-muted md:text-sm">
           Updated {new Date(updatedAt).toLocaleTimeString("en-IN")}
         </p>
       ) : null}

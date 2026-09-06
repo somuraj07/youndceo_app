@@ -36,24 +36,28 @@ export default async function PlanHomePage() {
         <MarketPulse />
       </div>
 
-      <div className="relative z-10">
-        <HomeGoals
-          goals={goals.map((g) => ({
-            id: g.id,
-            title: g.title,
-            icon: g.icon,
-            targetAmount: g.targetAmount,
-            currentAmount: g.currentAmount,
-            deadline: g.deadline?.toISOString() ?? null,
-          }))}
-        />
-      </div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:items-start">
+        <div className="relative z-10 md:col-span-7">
+          <HomeGoals
+            goals={goals.map((g) => ({
+              id: g.id,
+              title: g.title,
+              icon: g.icon,
+              targetAmount: g.targetAmount,
+              currentAmount: g.currentAmount,
+              deadline: g.deadline?.toISOString() ?? null,
+            }))}
+          />
+        </div>
 
-      <HomePortfolioSnapshot
-        piggyBalance={portfolio.cashWallet.balance}
-        savingsTotal={savingsTotal}
-        fundsTotal={fundsTotal}
-      />
+        <div className="md:col-span-5">
+          <HomePortfolioSnapshot
+            piggyBalance={portfolio.cashWallet.balance}
+            savingsTotal={savingsTotal}
+            fundsTotal={fundsTotal}
+          />
+        </div>
+      </div>
     </div>
   );
 }

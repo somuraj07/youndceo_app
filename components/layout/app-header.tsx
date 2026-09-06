@@ -23,7 +23,7 @@ export async function AppHeader({
     name.trim().split(/\s+/)[0] || (variant === "admin" ? "Admin" : "CEO");
   const homeHref = variant === "admin" ? "/admin" : "/home";
   const profileHref = variant === "admin" ? "/admin/settings" : "/profile";
-  const maxWidth = variant === "admin" ? "max-w-5xl" : "max-w-lg";
+  const maxWidth = "max-w-7xl";
 
   const [notifications, unreadCount] =
     variant === "student" && userId
@@ -34,7 +34,7 @@ export async function AppHeader({
       : [[], 0];
 
   return (
-    <header className="sticky top-0 z-40 px-4 pt-3 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 px-4 pt-3 sm:px-6 md:px-8 lg:px-10">
       <div
         className={`mx-auto flex w-full items-center justify-between gap-3 ${maxWidth}`}
       >
@@ -43,7 +43,7 @@ export async function AppHeader({
             href={homeHref}
             prefetch
             aria-label="Young CEO home"
-            className="shrink-0"
+            className="shrink-0 md:hidden"
           >
             <BrandLogo
               size={40}
@@ -56,14 +56,14 @@ export async function AppHeader({
             className="min-w-0"
           >
             <div className="min-w-0">
-              <p className="truncate text-base leading-tight text-muted">
+              <p className="truncate text-base leading-tight text-muted md:text-xl lg:text-2xl font-medium">
                 Hello,{" "}
-                <span className="font-semibold text-foreground">
+                <span className="font-bold text-foreground">
                   {firstName}
                 </span>
               </p>
               {variant === "admin" ? (
-                <p className="text-[11px] text-muted">Admin</p>
+                <p className="text-[11px] text-muted md:text-xs lg:text-sm">Admin</p>
               ) : null}
             </div>
           </Link>

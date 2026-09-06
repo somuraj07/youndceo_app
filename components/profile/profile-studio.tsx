@@ -193,53 +193,55 @@ export function ProfileStudio({ user, stats }: ProfileStudioProps) {
   }
 
   return (
-    <div className="profile-studio fade-up mx-auto max-w-lg">
-      <div className="flex flex-col items-center px-4 pt-2">
-        <UserAvatar
-          src={displayAvatar}
-          name={displayName}
-          size={104}
-          className="profile-avatar-ring"
-        />
-        <h1 className="mt-3 text-center text-2xl font-bold tracking-wide text-foreground uppercase">
-          {displayName}
-        </h1>
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
-          <span className="profile-tag text-sm">
-            <IconLearn className="h-4 w-4" />
-            Learning
-          </span>
-          <span className="profile-tag text-sm">
-            <IconWallet className="h-4 w-4" />
-            Investing
-          </span>
-          {isAdmin ? <span className="profile-tag text-sm">Admin</span> : null}
+    <div className="profile-studio fade-up mx-auto max-w-lg md:max-w-5xl md:grid md:grid-cols-12 md:gap-6 md:items-start">
+      <div className="md:col-span-5 md:sticky md:top-20">
+        <div className="flex flex-col items-center px-4 pt-2">
+          <UserAvatar
+            src={displayAvatar}
+            name={displayName}
+            size={104}
+            className="profile-avatar-ring"
+          />
+          <h1 className="mt-3 text-center text-2xl font-bold tracking-wide text-foreground uppercase">
+            {displayName}
+          </h1>
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+            <span className="profile-tag text-sm">
+              <IconLearn className="h-4 w-4" />
+              Learning
+            </span>
+            <span className="profile-tag text-sm">
+              <IconWallet className="h-4 w-4" />
+              Investing
+            </span>
+            {isAdmin ? <span className="profile-tag text-sm">Admin</span> : null}
+          </div>
+        </div>
+
+        {!isAdmin ? (
+          <div className="mt-5 grid grid-cols-4 gap-2 px-1">
+            <Stat label="Goals" value={String(stats.goals)} />
+            <Stat label="Completed" value={String(stats.completed)} />
+            <Stat label="XP" value={stats.xp.toLocaleString("en-IN")} />
+            <Stat label="Saved" value={`${stats.savedPercent}%`} />
+          </div>
+        ) : (
+          <p className="mt-5 px-1 text-center text-sm text-muted">{user.email}</p>
+        )}
+
+        <div className="mt-5 px-1">
+          <button
+            type="button"
+            onClick={() => setMode("edit")}
+            className="profile-primary-btn flex w-full items-center justify-center gap-2"
+          >
+            <span aria-hidden>✎</span>
+            Edit Profile
+          </button>
         </div>
       </div>
 
-      {!isAdmin ? (
-        <div className="mt-5 grid grid-cols-4 gap-2 px-1">
-          <Stat label="Goals" value={String(stats.goals)} />
-          <Stat label="Completed" value={String(stats.completed)} />
-          <Stat label="XP" value={stats.xp.toLocaleString("en-IN")} />
-          <Stat label="Saved" value={`${stats.savedPercent}%`} />
-        </div>
-      ) : (
-        <p className="mt-5 px-1 text-center text-sm text-muted">{user.email}</p>
-      )}
-
-      <div className="mt-5 px-1">
-        <button
-          type="button"
-          onClick={() => setMode("edit")}
-          className="profile-primary-btn flex w-full items-center justify-center gap-2"
-        >
-          <span aria-hidden>✎</span>
-          Edit Profile
-        </button>
-      </div>
-
-      <div className="mt-6 space-y-3 px-1">
+      <div className="mt-6 space-y-4 px-1 md:col-span-7 md:mt-0">
         <div className="flex gap-4 border-b border-white/10 pb-2 text-base">
           <span className="profile-tab-active">Overview</span>
           <Link href="/learn" className="text-muted">

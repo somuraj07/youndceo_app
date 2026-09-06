@@ -68,7 +68,7 @@ export function BottomNav({ variant }: BottomNavProps) {
 
   return (
     <nav
-      className={`nav-dock px-2 py-2 ${
+      className={`nav-dock md:hidden px-2 py-2 ${
         variant === "admin" ? "nav-dock-wide" : ""
       }`}
     >
