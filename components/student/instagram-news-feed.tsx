@@ -89,14 +89,14 @@ function NewsPostCard({ post }: { post: NewsFeedItem }) {
   }
 
   return (
-    <article className="glass overflow-hidden rounded-3xl">
-      <header className="flex items-center gap-3 px-4 py-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-teal/20 text-sm font-bold text-teal">
+    <article className="glass mx-auto w-full max-w-xl overflow-hidden rounded-3xl md:max-w-2xl lg:max-w-3xl">
+      <header className="flex items-center gap-3 px-4 py-3 md:p-4 lg:p-5 md:gap-4">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-teal/20 text-sm font-bold text-teal md:h-11 md:w-11 md:text-base lg:h-12 lg:w-12 lg:text-lg">
           YC
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-foreground">youngceo</p>
-          <p className="text-[11px] text-muted">{timeAgo(post.createdAt)}</p>
+          <p className="text-sm font-semibold text-foreground md:text-base lg:text-lg">youngceo</p>
+          <p className="text-[11px] text-muted md:text-xs lg:text-sm">{timeAgo(post.createdAt)}</p>
         </div>
       </header>
 
@@ -131,7 +131,7 @@ function NewsPostCard({ post }: { post: NewsFeedItem }) {
               href={post.videoUrl}
               target="_blank"
               rel="noreferrer"
-              className="flex aspect-square items-center justify-center text-sm text-cyan underline"
+              className="flex aspect-square items-center justify-center text-sm text-cyan underline md:text-base lg:text-lg"
               onClick={(e) => e.stopPropagation()}
             >
               Watch video
@@ -142,36 +142,35 @@ function NewsPostCard({ post }: { post: NewsFeedItem }) {
             <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <HeartIcon
                 filled
-                className="h-20 w-20 scale-110 text-white drop-shadow-lg transition"
+                className="h-20 w-20 scale-110 text-white drop-shadow-lg transition md:h-24 md:w-24"
               />
             </span>
           ) : null}
         </button>
       ) : null}
 
-      <div className="space-y-2 px-4 py-3">
+      <div className="space-y-2.5 px-4 py-3 md:p-5 md:space-y-3.5 lg:p-6">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => runLike()}
             disabled={pending}
-            className={`transition active:scale-90 ${
-              liked ? "text-red" : "text-foreground"
-            }`}
+            className={`transition active:scale-90 ${liked ? "text-red" : "text-foreground"
+              }`}
             aria-label={liked ? "Unlike" : "Like"}
           >
-            <HeartIcon filled={liked} className="h-7 w-7" />
+            <HeartIcon filled={liked} className="h-7 w-7 md:h-8 md:w-8 lg:h-9 lg:w-9" />
           </button>
-          <p className="text-sm font-semibold text-foreground">
+          <p className="text-sm font-semibold text-foreground md:text-base lg:text-lg">
             {likeCount.toLocaleString()} like{likeCount === 1 ? "" : "s"}
           </p>
         </div>
 
-        <p className="text-sm text-foreground">
+        <p className="text-sm text-foreground md:text-base lg:text-lg">
           <span className="font-semibold">youngceo</span>{" "}
           <span className="font-medium">{post.title}</span>
         </p>
-        <p className="whitespace-pre-wrap text-sm text-muted">{post.body}</p>
+        <p className="whitespace-pre-wrap text-sm text-muted md:text-base lg:text-lg">{post.body}</p>
       </div>
     </article>
   );
@@ -180,14 +179,14 @@ function NewsPostCard({ post }: { post: NewsFeedItem }) {
 export function InstagramNewsFeed({ posts }: { posts: NewsFeedItem[] }) {
   if (posts.length === 0) {
     return (
-      <div className="glass rounded-3xl px-5 py-10 text-center">
-        <p className="text-sm text-muted">No posts yet. Check back soon.</p>
+      <div className="glass mx-auto w-full max-w-xl rounded-3xl px-5 py-10 text-center md:max-w-2xl md:p-12 lg:max-w-3xl">
+        <p className="text-sm text-muted md:text-base lg:text-lg">No posts yet. Check back soon.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-5">
+    <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-6 md:max-w-2xl lg:max-w-3xl md:gap-8">
       {posts.map((post) => (
         <NewsPostCard key={post.id} post={post} />
       ))}

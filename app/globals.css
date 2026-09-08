@@ -352,6 +352,13 @@ html[data-theme="light"] .nav-dock .nav-item-active .nav-item-label {
   z-index: 35;
 }
 
+@media (min-width: 768px) {
+  .whatsapp-help {
+    bottom: 2rem;
+    right: 2rem;
+  }
+}
+
 .whatsapp-help-btn {
   display: inline-flex;
   align-items: center;

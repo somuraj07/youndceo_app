@@ -110,90 +110,96 @@ function TrackerSection({
 
   return (
     <div className="space-y-6">
-      <div className="fade-up grid grid-cols-3 gap-2">
+      <div className="fade-up grid grid-cols-3 gap-3 md:gap-4">
         <SummaryCard label="Income" value={monthIncomeTotal} tone="income" />
         <SummaryCard label="Expenses" value={monthExpenseTotal} tone="expense" />
         <SummaryCard label="Net" value={monthNet} tone="net" />
       </div>
 
-      {insights.categorySegments.length > 0 ? (
-        <section className="glass fade-up fade-up-delay-1 space-y-4 rounded-3xl p-4">
-          <div>
-            <h2 className="font-semibold text-foreground">Spending insights</h2>
-            <p className="text-xs text-muted">
-              Where your money went this month
-            </p>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:items-start">
+        {insights.categorySegments.length > 0 ? (
+          <div className="md:col-span-6">
+            <section className="glass fade-up fade-up-delay-1 space-y-4 rounded-3xl p-4 md:p-6 lg:p-7">
+              <div>
+                <h2 className="font-semibold text-foreground md:text-2xl lg:text-3xl font-bold">Spending insights</h2>
+                <p className="text-xs text-muted md:text-base lg:text-lg">
+                  Where your money went this month
+                </p>
+              </div>
+
+              <CategoryPie segments={insights.categorySegments} />
+
+              {insights.topCategory ? (
+                <div className="rounded-2xl bg-purple/10 p-3 text-center md:p-5">
+                  <p className="text-[10px] font-semibold tracking-wider text-purple-soft uppercase md:text-xs lg:text-sm">
+                    You spend most on
+                  </p>
+                  <p className="mt-1 text-lg font-bold text-foreground md:text-2xl lg:text-3xl">
+                    {insights.topCategory.label}
+                  </p>
+                  <p className="text-sm text-muted md:text-base lg:text-lg">
+                    {inr(insights.topCategory.value)} · {insights.topCategory.percent}%
+                    of expenses
+                  </p>
+                </div>
+              ) : null}
+
+              <div>
+                <p className="mb-2 text-xs font-medium text-muted md:text-sm lg:text-base">
+                  Last 7 days spending
+                </p>
+                <WaveBars
+                  values={insights.last7Days}
+                  labels={insights.last7Labels}
+                  colors={[
+                    "#a855f7",
+                    "#8b5cf6",
+                    "#7c3aed",
+                    "#c084fc",
+                    "#a78bfa",
+                    "#9333ea",
+                    "#6d28d9",
+                  ]}
+                />
+              </div>
+
+              {insights.trend.length > 1 ? (
+                <div>
+                  <p className="mb-2 text-xs font-medium text-muted md:text-sm lg:text-base">
+                    Spending trend
+                  </p>
+                  <AreaSpark values={insights.trend} color="#f59e0b" height={56} />
+                </div>
+              ) : null}
+
+              {insights.bubbles.length > 0 ? (
+                <div>
+                  <p className="mb-2 text-center text-xs font-medium text-muted md:text-sm lg:text-base">
+                    Category bubbles
+                  </p>
+                  <BubbleCluster items={insights.bubbles} />
+                </div>
+              ) : null}
+            </section>
+          </div>
+        ) : null}
+
+        <div className={`space-y-6 ${insights.categorySegments.length > 0 ? "md:col-span-6" : "md:col-span-12"}`}>
+          <div className="fade-up fade-up-delay-1">
+            <MoneyEntryPad onSuccess={() => router.refresh()} />
           </div>
 
-          <CategoryPie segments={insights.categorySegments} />
-
-          {insights.topCategory ? (
-            <div className="rounded-2xl bg-purple/10 p-3 text-center">
-              <p className="text-[10px] font-semibold tracking-wider text-purple-soft uppercase">
-                You spend most on
-              </p>
-              <p className="mt-1 text-lg font-bold text-foreground">
-                {insights.topCategory.label}
-              </p>
-              <p className="text-sm text-muted">
-                {inr(insights.topCategory.value)} · {insights.topCategory.percent}%
-                of expenses
-              </p>
-            </div>
-          ) : null}
-
-          <div>
-            <p className="mb-2 text-xs font-medium text-muted">
-              Last 7 days spending
-            </p>
-            <WaveBars
-              values={insights.last7Days}
-              labels={insights.last7Labels}
-              colors={[
-                "#a855f7",
-                "#8b5cf6",
-                "#7c3aed",
-                "#c084fc",
-                "#a78bfa",
-                "#9333ea",
-                "#6d28d9",
-              ]}
-            />
+          <div className="fade-up fade-up-delay-2 space-y-3">
+            <h2 className="text-sm font-medium text-foreground md:text-xl lg:text-2xl font-bold">Recent</h2>
+            {expenses.length === 0 ? (
+              <p className="text-sm text-muted md:text-base">No entries yet — add one above.</p>
+            ) : (
+              expenses.map((expense) => (
+                <ExpenseRow key={expense.id} expense={expense} />
+              ))
+            )}
           </div>
-
-          {insights.trend.length > 1 ? (
-            <div>
-              <p className="mb-2 text-xs font-medium text-muted">
-                Spending trend
-              </p>
-              <AreaSpark values={insights.trend} color="#f59e0b" height={56} />
-            </div>
-          ) : null}
-
-          {insights.bubbles.length > 0 ? (
-            <div>
-              <p className="mb-2 text-center text-xs font-medium text-muted">
-                Category bubbles
-              </p>
-              <BubbleCluster items={insights.bubbles} />
-            </div>
-          ) : null}
-        </section>
-      ) : null}
-
-      <div className="fade-up fade-up-delay-1">
-        <MoneyEntryPad onSuccess={() => router.refresh()} />
-      </div>
-
-      <div className="fade-up fade-up-delay-2 space-y-2">
-        <h2 className="text-sm font-medium text-foreground">Recent</h2>
-        {expenses.length === 0 ? (
-          <p className="text-sm text-muted">No entries yet — add one above.</p>
-        ) : (
-          expenses.map((expense) => (
-            <ExpenseRow key={expense.id} expense={expense} />
-          ))
-        )}
+        </div>
       </div>
     </div>
   );
@@ -496,9 +502,9 @@ function SummaryCard({
           : "text-red";
 
   return (
-    <div className="glass rounded-2xl p-3 text-center">
-      <p className="text-[10px] text-muted">{label}</p>
-      <p className={`mt-1 text-sm font-bold ${color}`}>
+    <div className="glass rounded-2xl p-3 text-center md:p-5 lg:p-6">
+      <p className="text-[10px] text-muted md:text-sm lg:text-base font-medium">{label}</p>
+      <p className={`mt-1 text-sm font-bold md:text-xl lg:text-2xl md:font-extrabold ${color}`}>
         ₹{Math.abs(value).toLocaleString("en-IN")}
         {tone === "net" && value < 0 ? " −" : ""}
       </p>
@@ -513,13 +519,13 @@ function ExpenseRow({ expense }: { expense: ExpenseItem }) {
 
   if (editing) {
     return (
-      <form action={action} className="glass space-y-2 rounded-2xl p-4">
+      <form action={action} className="glass space-y-2 rounded-2xl p-4 md:p-6">
         <input type="hidden" name="expenseId" value={expense.id} />
         <input
           name="title"
           defaultValue={expense.title}
           required
-          className="profile-field w-full"
+          className="profile-field w-full md:text-base"
         />
         <div className="grid grid-cols-2 gap-2">
           <input
@@ -527,60 +533,60 @@ function ExpenseRow({ expense }: { expense: ExpenseItem }) {
             type="number"
             defaultValue={expense.amount}
             required
-            className="profile-field w-full"
+            className="profile-field w-full md:text-base"
           />
           <input
             name="category"
             defaultValue={expense.category}
             required
-            className="profile-field w-full"
+            className="profile-field w-full md:text-base"
           />
         </div>
         <div className="flex gap-2">
           <button
             type="submit"
             disabled={pending}
-            className="money-pad-submit flex-1 py-2.5 text-sm"
+            className="money-pad-submit flex-1 py-2.5 text-sm md:py-3 md:text-base font-bold"
           >
             Save
           </button>
           <button
             type="button"
             onClick={() => setEditing(false)}
-            className="rounded-xl bg-white/10 px-3 text-xs text-muted"
+            className="rounded-xl bg-white/10 px-3 text-xs text-muted md:px-4 md:text-sm"
           >
             Cancel
           </button>
         </div>
-        {state.error ? <p className="text-xs text-red">{state.error}</p> : null}
+        {state.error ? <p className="text-xs text-red md:text-sm">{state.error}</p> : null}
       </form>
     );
   }
 
   return (
-    <article className="glass flex items-center justify-between gap-3 rounded-2xl px-4 py-3">
+    <article className="glass flex items-center justify-between gap-3 rounded-2xl px-4 py-3 md:p-5">
       <div className="min-w-0">
-        <p className="truncate font-medium text-foreground">{expense.title}</p>
-        <p className="text-xs text-muted">
+        <p className="truncate font-medium text-foreground md:text-lg lg:text-xl md:font-semibold">{expense.title}</p>
+        <p className="text-xs text-muted md:text-sm lg:text-base" suppressHydrationWarning>
           {isIncome ? "Income" : "Expense"} · {expense.category} ·{" "}
-          {new Date(expense.spentAt).toLocaleDateString()}
+          {new Date(expense.spentAt).toLocaleDateString("en-IN")}
         </p>
       </div>
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="flex shrink-0 items-center gap-3 md:gap-4">
         <p
-          className={`font-semibold ${isIncome ? "text-green" : "text-orange"}`}
+          className={`font-semibold md:text-xl lg:text-2xl md:font-bold ${isIncome ? "text-green" : "text-orange"}`}
         >
           {isIncome ? "+" : "−"}₹{expense.amount.toLocaleString("en-IN")}
         </p>
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="text-[11px] text-teal"
+          className="text-[11px] text-teal md:text-sm font-semibold"
         >
           Edit
         </button>
         <form action={deleteExpense.bind(null, expense.id)}>
-          <button type="submit" className="text-[11px] text-red">
+          <button type="submit" className="text-[11px] text-red md:text-sm">
             Delete
           </button>
         </form>

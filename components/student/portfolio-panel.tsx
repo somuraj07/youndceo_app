@@ -63,13 +63,13 @@ export function PortfolioPanel({
   const [tab, setTab] = useState<PortfolioTab>("piggy");
 
   return (
-    <div className="space-y-4">
-      <header className="portfolio-nav fade-up">
+    <div className="space-y-4 md:space-y-6">
+      <header className="portfolio-nav fade-up md:p-5">
         <div className="portfolio-nav-head">
-          <h1 className="text-lg font-semibold tracking-tight text-foreground">
+          <h1 className="text-lg font-semibold tracking-tight text-foreground md:text-3xl lg:text-4xl md:font-bold">
             Portfolio
           </h1>
-          <p className="text-xs text-muted">Save & invest</p>
+          <p className="text-xs text-muted md:text-base lg:text-lg">Save & invest</p>
         </div>
         <nav className="portfolio-nav-tabs" aria-label="Portfolio sections">
           {portfolioTabs.map(({ id, label }) => (
@@ -77,9 +77,9 @@ export function PortfolioPanel({
               key={id}
               type="button"
               onClick={() => setTab(id)}
-              className={
+              className={`${
                 tab === id ? "portfolio-nav-tab portfolio-nav-tab-active" : "portfolio-nav-tab"
-              }
+              } md:px-5 md:py-2.5 md:text-base lg:text-lg md:font-bold`}
               aria-pressed={tab === id}
             >
               {label}
@@ -103,8 +103,8 @@ function PiggyBank({ balance }: { balance: number }) {
   const [state, action, pending] = useActionState(adjustCash, initial);
 
   return (
-    <section className="space-y-4">
-      <div className="glass-strong fade-up rounded-3xl p-6 text-center">
+    <section className="grid grid-cols-1 gap-6 md:grid-cols-12 md:items-start">
+      <div className="glass-strong fade-up rounded-3xl p-6 text-center md:col-span-6">
         <Image
           src="/piggy-bank.png"
           alt="A happy piggy bank surrounded by coins and money"
@@ -121,7 +121,7 @@ function PiggyBank({ balance }: { balance: number }) {
         </p>
       </div>
 
-      <form action={action} className="glass rounded-3xl p-4">
+      <form action={action} className="glass rounded-3xl p-4 md:col-span-6">
         <h2 className="font-semibold text-foreground">Move money</h2>
         <p className="mt-1 text-xs text-muted">
           Add pocket money or take out what you need.
@@ -177,8 +177,8 @@ function SavingsSection({
   );
 
   return (
-    <section className="space-y-4">
-      <form action={action} className="glass rounded-3xl p-4">
+    <section className="grid grid-cols-1 gap-6 md:grid-cols-12 md:items-start">
+      <form action={action} className="glass rounded-3xl p-4 md:col-span-5">
         <input type="hidden" name="kind" value={kind} />
         <h2 className="font-semibold text-foreground">
           Open a Savings Account
@@ -234,18 +234,20 @@ function SavingsSection({
         </div>
       </form>
 
-      {accounts.length === 0 ? (
-        <div className="glass rounded-3xl p-6 text-center">
-          <p className="text-3xl">💎</p>
-          <p className="mt-2 text-sm text-muted">
-            Create your first savings account to see how your money grows.
-          </p>
-        </div>
-      ) : (
-        accounts.map((account) => (
-          <SavingsCard key={account.id} account={account} />
-        ))
-      )}
+      <div className="space-y-4 md:col-span-7">
+        {accounts.length === 0 ? (
+          <div className="glass rounded-3xl p-6 text-center">
+            <p className="text-3xl">💎</p>
+            <p className="mt-2 text-sm text-muted">
+              Create your first savings account to see how your money grows.
+            </p>
+          </div>
+        ) : (
+          accounts.map((account) => (
+            <SavingsCard key={account.id} account={account} />
+          ))
+        )}
+      </div>
     </section>
   );
 }
@@ -257,10 +259,10 @@ function MutualFundsSection({ accounts }: { accounts: SavingsItem[] }) {
   );
 
   return (
-    <section className="space-y-4">
+    <section className="grid grid-cols-1 gap-6 md:grid-cols-12 md:items-start">
       <form
         action={action}
-        className="rounded-3xl border border-teal/20 bg-gradient-to-br from-teal/10 via-transparent to-cyan/5 p-4"
+        className="rounded-3xl border border-teal/20 bg-gradient-to-br from-teal/10 via-transparent to-cyan/5 p-4 md:col-span-5"
       >
         <input type="hidden" name="kind" value="MUTUAL_FUND" />
         <div className="flex items-center gap-2">
@@ -327,18 +329,20 @@ function MutualFundsSection({ accounts }: { accounts: SavingsItem[] }) {
         </div>
       </form>
 
-      {accounts.length === 0 ? (
-        <div className="rounded-3xl border border-teal/15 bg-teal/5 p-6 text-center">
-          <p className="text-3xl">📈</p>
-          <p className="mt-2 text-sm text-muted">
-            Add your first mutual fund plan to see long-term growth projections.
-          </p>
-        </div>
-      ) : (
-        accounts.map((account) => (
-          <MutualFundCard key={account.id} account={account} />
-        ))
-      )}
+      <div className="space-y-4 md:col-span-7">
+        {accounts.length === 0 ? (
+          <div className="rounded-3xl border border-teal/15 bg-teal/5 p-6 text-center">
+            <p className="text-3xl">📈</p>
+            <p className="mt-2 text-sm text-muted">
+              Add your first mutual fund plan to see long-term growth projections.
+            </p>
+          </div>
+        ) : (
+          accounts.map((account) => (
+            <MutualFundCard key={account.id} account={account} />
+          ))
+        )}
+      </div>
     </section>
   );
 }
